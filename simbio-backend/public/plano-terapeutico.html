@@ -131,7 +131,6 @@
             gap: 16px;
         }
         
-        /* Modal de Confirmação */
         .modal {
             display: none;
             position: fixed;
@@ -288,25 +287,24 @@
         <div class="card">
             <h2>💊 Medicamentos</h2>
             <div id="medicamentosList"></div>
-            <button type="button" class="btn-add" onclick="window.adicionarMedicamento()">+ Adicionar Medicamento</button>
+            <button type="button" class="btn-add" onclick="adicionarMedicamento()">+ Adicionar Medicamento</button>
         </div>
 
         <div class="card">
             <h2>🏃 Exercícios</h2>
             <div id="exerciciosList"></div>
-            <button type="button" class="btn-add" onclick="window.adicionarExercicio()">+ Adicionar Exercício</button>
+            <button type="button" class="btn-add" onclick="adicionarExercicio()">+ Adicionar Exercício</button>
         </div>
 
         <div class="card">
             <h2>🩺 Cuidados Específicos</h2>
             <div id="cuidadosList"></div>
-            <button type="button" class="btn-add" onclick="window.adicionarCuidado()">+ Adicionar Cuidado</button>
+            <button type="button" class="btn-add" onclick="adicionarCuidado()">+ Adicionar Cuidado</button>
         </div>
 
-        <button class="btn-salvar" onclick="window.salvarPlano()">💾 Salvar Plano Terapêutico</button>
+        <button class="btn-salvar" onclick="salvarPlano()">💾 Salvar Plano Terapêutico</button>
     </div>
 
-    <!-- Modal de Confirmação -->
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -314,13 +312,10 @@
                 <h3>Plano Criado com Sucesso!</h3>
                 <p>O plano terapêutico foi registrado</p>
             </div>
-            <div class="modal-body" id="modalBody">
-                <!-- Conteúdo dinâmico -->
-            </div>
+            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
-    <!-- Loader -->
     <div id="loader" class="loader">
         <div class="spinner"></div>
     </div>
@@ -339,7 +334,6 @@
         
         let nextId = 1;
         
-        // Funções auxiliares
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -353,13 +347,25 @@
             else loader.classList.remove('show');
         }
         
+        // FUNÇÃO CORRIGIDA - usa o novo sistema de autenticação
         function carregarProfissional() {
-            const stored = localStorage.getItem('simbio_profissional');
+            const stored = localStorage.getItem('simbio_usuario');
             if (!stored) {
-                window.location.href = '/login-profissional.html';
+                showToast('Faça login para continuar', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 1500);
                 return null;
             }
-            profissional = JSON.parse(stored);
+            const usuario = JSON.parse(stored);
+            if (usuario.tipo_usuario !== 'profissional') {
+                showToast('Acesso apenas para profissionais', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 1500);
+                return null;
+            }
+            profissional = usuario;
             return profissional;
         }
         
@@ -384,8 +390,7 @@
             }
         }
         
-        // Funções de adicionar
-        window.adicionarMedicamento = function() {
+        function adicionarMedicamento() {
             const id = nextId++;
             medicamentos.push({
                 id,
@@ -396,9 +401,9 @@
                 instrucoes: ''
             });
             renderizarMedicamentos();
-        };
+        }
         
-        window.adicionarExercicio = function() {
+        function adicionarExercicio() {
             const id = nextId++;
             exercicios.push({
                 id,
@@ -409,9 +414,9 @@
                 instrucoes: ''
             });
             renderizarExercicios();
-        };
+        }
         
-        window.adicionarCuidado = function() {
+        function adicionarCuidado() {
             const id = nextId++;
             cuidados.push({
                 id,
@@ -421,41 +426,38 @@
                 horarios: ''
             });
             renderizarCuidados();
-        };
+        }
         
-        // Funções de remover
-        window.removerMedicamento = function(id) {
+        function removerMedicamento(id) {
             medicamentos = medicamentos.filter(m => m.id !== id);
             renderizarMedicamentos();
-        };
+        }
         
-        window.removerExercicio = function(id) {
+        function removerExercicio(id) {
             exercicios = exercicios.filter(e => e.id !== id);
             renderizarExercicios();
-        };
+        }
         
-        window.removerCuidado = function(id) {
+        function removerCuidado(id) {
             cuidados = cuidados.filter(c => c.id !== id);
             renderizarCuidados();
-        };
+        }
         
-        // Funções de atualizar
-        window.atualizarMedicamento = function(id, campo, valor) {
+        function atualizarMedicamento(id, campo, valor) {
             const med = medicamentos.find(m => m.id === id);
             if (med) med[campo] = valor;
-        };
+        }
         
-        window.atualizarExercicio = function(id, campo, valor) {
+        function atualizarExercicio(id, campo, valor) {
             const exe = exercicios.find(e => e.id === id);
             if (exe) exe[campo] = valor;
-        };
+        }
         
-        window.atualizarCuidado = function(id, campo, valor) {
+        function atualizarCuidado(id, campo, valor) {
             const cuid = cuidados.find(c => c.id === id);
             if (cuid) cuid[campo] = valor;
-        };
+        }
         
-        // Funções de renderização
         function renderizarMedicamentos() {
             const container = document.getElementById('medicamentosList');
             if (!container) return;
@@ -467,30 +469,30 @@
                 <div class="item-card">
                     <div class="item-header">
                         <h3>💊 Medicamento</h3>
-                        <button class="btn-remover" onclick="window.removerMedicamento(${med.id})">Remover</button>
+                        <button class="btn-remover" onclick="removerMedicamento(${med.id})">Remover</button>
                     </div>
                     <div class="form-group">
                         <label>Nome do medicamento *</label>
-                        <input type="text" value="${(med.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Amoxicilina" onchange="window.atualizarMedicamento(${med.id}, 'nome', this.value)">
+                        <input type="text" value="${(med.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Amoxicilina" onchange="atualizarMedicamento(${med.id}, 'nome', this.value)">
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Dosagem *</label>
-                            <input type="text" value="${(med.dosagem || '').replace(/"/g, '&quot;')}" placeholder="Ex: 500mg" onchange="window.atualizarMedicamento(${med.id}, 'dosagem', this.value)">
+                            <input type="text" value="${(med.dosagem || '').replace(/"/g, '&quot;')}" placeholder="Ex: 500mg" onchange="atualizarMedicamento(${med.id}, 'dosagem', this.value)">
                         </div>
                         <div class="form-group">
                             <label>Horários *</label>
-                            <input type="text" value="${(med.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: 08:00, 14:00, 20:00" onchange="window.atualizarMedicamento(${med.id}, 'horarios', this.value)">
+                            <input type="text" value="${(med.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: 08:00, 14:00, 20:00" onchange="atualizarMedicamento(${med.id}, 'horarios', this.value)">
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Duração (dias)</label>
-                            <input type="number" value="${med.duracao_dias || ''}" placeholder="Ex: 7" onchange="window.atualizarMedicamento(${med.id}, 'duracao_dias', this.value)">
+                            <input type="number" value="${med.duracao_dias || ''}" placeholder="Ex: 7" onchange="atualizarMedicamento(${med.id}, 'duracao_dias', this.value)">
                         </div>
                         <div class="form-group">
                             <label>Instruções</label>
-                            <input type="text" value="${(med.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Tomar após as refeições" onchange="window.atualizarMedicamento(${med.id}, 'instrucoes', this.value)">
+                            <input type="text" value="${(med.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Tomar após as refeições" onchange="atualizarMedicamento(${med.id}, 'instrucoes', this.value)">
                         </div>
                     </div>
                 </div>
@@ -508,30 +510,30 @@
                 <div class="item-card">
                     <div class="item-header">
                         <h3>🏃 Exercício</h3>
-                        <button class="btn-remover" onclick="window.removerExercicio(${exe.id})">Remover</button>
+                        <button class="btn-remover" onclick="removerExercicio(${exe.id})">Remover</button>
                     </div>
                     <div class="form-group">
                         <label>Nome do exercício *</label>
-                        <input type="text" value="${(exe.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Alongamento de braços" onchange="window.atualizarExercicio(${exe.id}, 'nome', this.value)">
+                        <input type="text" value="${(exe.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Alongamento de braços" onchange="atualizarExercicio(${exe.id}, 'nome', this.value)">
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Frequência *</label>
-                            <input type="text" value="${(exe.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: 2x ao dia" onchange="window.atualizarExercicio(${exe.id}, 'frequencia', this.value)">
+                            <input type="text" value="${(exe.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: 2x ao dia" onchange="atualizarExercicio(${exe.id}, 'frequencia', this.value)">
                         </div>
                         <div class="form-group">
                             <label>Duração *</label>
-                            <input type="text" value="${(exe.duracao || '').replace(/"/g, '&quot;')}" placeholder="Ex: 10 minutos" onchange="window.atualizarExercicio(${exe.id}, 'duracao', this.value)">
+                            <input type="text" value="${(exe.duracao || '').replace(/"/g, '&quot;')}" placeholder="Ex: 10 minutos" onchange="atualizarExercicio(${exe.id}, 'duracao', this.value)">
                         </div>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Repetições</label>
-                            <input type="number" value="${exe.repeticoes || ''}" placeholder="Ex: 10" onchange="window.atualizarExercicio(${exe.id}, 'repeticoes', this.value)">
+                            <input type="number" value="${exe.repeticoes || ''}" placeholder="Ex: 10" onchange="atualizarExercicio(${exe.id}, 'repeticoes', this.value)">
                         </div>
                         <div class="form-group">
                             <label>Instruções</label>
-                            <input type="text" value="${(exe.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Fazer com calma" onchange="window.atualizarExercicio(${exe.id}, 'instrucoes', this.value)">
+                            <input type="text" value="${(exe.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Fazer com calma" onchange="atualizarExercicio(${exe.id}, 'instrucoes', this.value)">
                         </div>
                     </div>
                 </div>
@@ -549,24 +551,24 @@
                 <div class="item-card">
                     <div class="item-header">
                         <h3>🩺 Cuidado</h3>
-                        <button class="btn-remover" onclick="window.removerCuidado(${cuid.id})">Remover</button>
+                        <button class="btn-remover" onclick="removerCuidado(${cuid.id})">Remover</button>
                     </div>
                     <div class="form-group">
                         <label>Nome do cuidado *</label>
-                        <input type="text" value="${(cuid.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Cuidado com o curativo" onchange="window.atualizarCuidado(${cuid.id}, 'nome', this.value)">
+                        <input type="text" value="${(cuid.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Cuidado com o curativo" onchange="atualizarCuidado(${cuid.id}, 'nome', this.value)">
                     </div>
                     <div class="form-group">
                         <label>Descrição *</label>
-                        <textarea rows="2" placeholder="Descreva o cuidado..." onchange="window.atualizarCuidado(${cuid.id}, 'descricao', this.value)">${cuid.descricao || ''}</textarea>
+                        <textarea rows="2" placeholder="Descreva o cuidado..." onchange="atualizarCuidado(${cuid.id}, 'descricao', this.value)">${cuid.descricao || ''}</textarea>
                     </div>
                     <div class="row">
                         <div class="form-group">
                             <label>Frequência *</label>
-                            <input type="text" value="${(cuid.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: Diário" onchange="window.atualizarCuidado(${cuid.id}, 'frequencia', this.value)">
+                            <input type="text" value="${(cuid.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: Diário" onchange="atualizarCuidado(${cuid.id}, 'frequencia', this.value)">
                         </div>
                         <div class="form-group">
                             <label>Horários</label>
-                            <input type="text" value="${(cuid.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: Manhã e noite" onchange="window.atualizarCuidado(${cuid.id}, 'horarios', this.value)">
+                            <input type="text" value="${(cuid.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: Manhã e noite" onchange="atualizarCuidado(${cuid.id}, 'horarios', this.value)">
                         </div>
                     </div>
                 </div>
@@ -574,76 +576,24 @@
         }
         
         function validarPlano() {
-            let isValid = true;
+            const medicamentosValidos = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
+            const exerciciosValidos = exercicios.filter(e => e.nome && e.nome.trim() !== '');
+            const cuidadosValidos = cuidados.filter(c => c.nome && c.nome.trim() !== '');
             
-            // Validar medicamentos
-            medicamentos.forEach(med => {
-                if (med.nome && med.nome.trim() !== '') {
-                    if (!med.dosagem || med.dosagem.trim() === '') {
-                        showToast(`Medicamento "${med.nome}" sem dosagem`, 'error');
-                        isValid = false;
-                    }
-                    if (!med.horarios || med.horarios.trim() === '') {
-                        showToast(`Medicamento "${med.nome}" sem horários`, 'error');
-                        isValid = false;
-                    }
-                } else if (med.nome === '' && (med.dosagem || med.horarios)) {
-                    showToast(`Medicamento sem nome preenchido`, 'error');
-                    isValid = false;
-                }
-            });
-            
-            // Validar exercícios
-            exercicios.forEach(exe => {
-                if (exe.nome && exe.nome.trim() !== '') {
-                    if (!exe.frequencia || exe.frequencia.trim() === '') {
-                        showToast(`Exercício "${exe.nome}" sem frequência`, 'error');
-                        isValid = false;
-                    }
-                    if (!exe.duracao || exe.duracao.trim() === '') {
-                        showToast(`Exercício "${exe.nome}" sem duração`, 'error');
-                        isValid = false;
-                    }
-                } else if (exe.nome === '' && (exe.frequencia || exe.duracao)) {
-                    showToast(`Exercício sem nome preenchido`, 'error');
-                    isValid = false;
-                }
-            });
-            
-            // Validar cuidados
-            cuidados.forEach(cuid => {
-                if (cuid.nome && cuid.nome.trim() !== '') {
-                    if (!cuid.descricao || cuid.descricao.trim() === '') {
-                        showToast(`Cuidado "${cuid.nome}" sem descrição`, 'error');
-                        isValid = false;
-                    }
-                    if (!cuid.frequencia || cuid.frequencia.trim() === '') {
-                        showToast(`Cuidado "${cuid.nome}" sem frequência`, 'error');
-                        isValid = false;
-                    }
-                } else if (cuid.nome === '' && (cuid.descricao || cuid.frequencia)) {
-                    showToast(`Cuidado sem nome preenchido`, 'error');
-                    isValid = false;
-                }
-            });
-            
-            const temItensValidos = medicamentos.some(m => m.nome && m.nome.trim() !== '') ||
-                                    exercicios.some(e => e.nome && e.nome.trim() !== '') ||
-                                    cuidados.some(c => c.nome && c.nome.trim() !== '');
-            
-            if (!temItensValidos) {
-                showToast('Adicione pelo menos um medicamento, exercício ou cuidado com nome preenchido.', 'error');
+            if (medicamentosValidos.length === 0 && exerciciosValidos.length === 0 && cuidadosValidos.length === 0) {
+                showToast('Adicione pelo menos um medicamento, exercício ou cuidado', 'error');
                 return false;
             }
-            
-            return isValid;
+            return true;
         }
         
-        function mostrarConfirmacao(resposta) {
+        function mostrarConfirmacao() {
             const modal = document.getElementById('confirmModal');
             const modalBody = document.getElementById('modalBody');
             
-            const resumo = resposta.resumo || { medicamentos: 0, exercicios: 0, cuidados: 0 };
+            const medicamentosValidos = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
+            const exerciciosValidos = exercicios.filter(e => e.nome && e.nome.trim() !== '');
+            const cuidadosValidos = cuidados.filter(c => c.nome && c.nome.trim() !== '');
             
             let html = `
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -659,12 +609,11 @@
                 </div>
                 
                 <div class="resumo-item">
-                    <h4>💊 Medicamentos (${medicamentos.filter(m => m.nome && m.nome.trim()).length})</h4>
+                    <h4>💊 Medicamentos (${medicamentosValidos.length})</h4>
             `;
             
-            const medValidos = medicamentos.filter(m => m.nome && m.nome.trim());
-            if (medValidos.length > 0) {
-                medValidos.forEach(med => {
+            if (medicamentosValidos.length > 0) {
+                medicamentosValidos.forEach(med => {
                     html += `
                         <div style="margin-bottom: 12px;">
                             <span class="badge">${med.nome}</span>
@@ -676,11 +625,10 @@
                 html += `<p style="color: #888;">Nenhum medicamento registrado</p>`;
             }
             
-            html += `</div><div class="resumo-item"><h4>🏃 Exercícios (${exercicios.filter(e => e.nome && e.nome.trim()).length})</h4>`;
+            html += `</div><div class="resumo-item"><h4>🏃 Exercícios (${exerciciosValidos.length})</h4>`;
             
-            const exeValidos = exercicios.filter(e => e.nome && e.nome.trim());
-            if (exeValidos.length > 0) {
-                exeValidos.forEach(exe => {
+            if (exerciciosValidos.length > 0) {
+                exerciciosValidos.forEach(exe => {
                     html += `
                         <div style="margin-bottom: 12px;">
                             <span class="badge">${exe.nome}</span>
@@ -692,11 +640,10 @@
                 html += `<p style="color: #888;">Nenhum exercício registrado</p>`;
             }
             
-            html += `</div><div class="resumo-item"><h4>🩺 Cuidados (${cuidados.filter(c => c.nome && c.nome.trim()).length})</h4>`;
+            html += `</div><div class="resumo-item"><h4>🩺 Cuidados (${cuidadosValidos.length})</h4>`;
             
-            const cuidValidos = cuidados.filter(c => c.nome && c.nome.trim());
-            if (cuidValidos.length > 0) {
-                cuidValidos.forEach(cuid => {
+            if (cuidadosValidos.length > 0) {
+                cuidadosValidos.forEach(cuid => {
                     html += `
                         <div style="margin-bottom: 12px;">
                             <span class="badge">${cuid.nome}</span>
@@ -710,20 +657,20 @@
             
             html += `
                 </div>
-                <button class="btn-fechar" onclick="window.fecharModalEVoltar()">✅ Ver lista de pacientes</button>
+                <button class="btn-fechar" onclick="fecharModalEVoltar()">✅ Ver lista de pacientes</button>
             `;
             
             modalBody.innerHTML = html;
             modal.classList.add('show');
         }
         
-        window.fecharModalEVoltar = function() {
+        function fecharModalEVoltar() {
             const modal = document.getElementById('confirmModal');
             modal.classList.remove('show');
             window.location.href = '/lista-pacientes.html';
-        };
+        }
         
-        window.salvarPlano = async function() {
+        async function salvarPlano() {
             if (!pacienteId) {
                 showToast('Nenhum paciente selecionado', 'error');
                 return;
@@ -736,7 +683,6 @@
             const observacoes = document.getElementById('observacoes').value;
             const dataFim = document.getElementById('dataFim').value;
             
-            // Filtrar apenas itens com nome preenchido
             const medicamentosFiltrados = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
             const exerciciosFiltrados = exercicios.filter(e => e.nome && e.nome.trim() !== '');
             const cuidadosFiltrados = cuidados.filter(c => c.nome && c.nome.trim() !== '');
@@ -763,26 +709,25 @@
                 
                 if (!response.ok) throw new Error(data.error || 'Erro ao salvar plano');
                 
-                // Mostrar modal de confirmação com resumo
-                mostrarConfirmacao(data);
+                mostrarConfirmacao();
                 
             } catch (err) {
                 showToast(err.message, 'error');
             } finally {
                 setLoader(false);
             }
-        };
+        }
         
-        window.voltar = function() {
+        function voltar() {
             window.location.href = '/lista-pacientes.html';
-        };
+        }
         
         // Inicialização
         function init() {
             if (!carregarProfissional()) return;
             carregarPacienteDaURL();
             
-            // Adicionar exemplos iniciais para demonstração
+            // Adicionar exemplos
             medicamentos.push({
                 id: nextId++,
                 nome: 'Amoxicilina',
@@ -797,7 +742,7 @@
                 frequencia: '3x ao dia',
                 duracao: '5 minutos',
                 repeticoes: '10',
-                instrucoes: 'Inspirar pelo nariz, expirar pela boca lentamente'
+                instrucoes: 'Inspirar pelo nariz, expirar pela boca'
             });
             cuidados.push({
                 id: nextId++,
@@ -811,7 +756,6 @@
             renderizarCuidados();
         }
         
-        // Iniciar quando o DOM estiver carregado
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>

@@ -6,167 +6,12 @@ const path = require('path');
 const db = require('./database');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3010;
 
 // Middlewares
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// server.js - Adicionar após as rotas existentes
-
-// ==================== ROTAS DE AUTENTICAÇÃO (RF11) ====================
-
-// Login unificado
-app.post('/api/login', (req, res) => {
-    const { email, senha, tipo } = req.body;
-    
-    if (!email || !senha) {
-        return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
-    }
-    
-    // Se o tipo for especificado como 'profissional' ou vier de uma rota específica
-    if (tipo === 'profissional') {
-        const sql = `SELECT id, nome, email, registro, tipo FROM profissionais WHERE email = ? AND senha = ?`;
-        db.get(sql, [email, senha], (err, row) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            if (!row) {
-                return res.status(401).json({ error: 'Email ou senha inválidos.' });
-            }
-            res.json({ 
-                message: 'Login realizado com sucesso!', 
-                usuario: { ...row, tipo_usuario: 'profissional' }
-            });
-        });
-    } else {
-        // Buscar primeiro em cuidadores, depois em profissionais (fallback)
-        const sqlCuidador = `SELECT id, nome, email, paciente_id FROM cuidadores WHERE email = ? AND senha = ?`;
-        db.get(sqlCuidador, [email, senha], (err, cuidador) => {
-            if (err) {
-                return res.status(500).json({ error: err.message });
-            }
-            if (cuidador) {
-                // Buscar dados do paciente vinculado
-                const sqlPaciente = `SELECT id, nome, idade, condicao_clinica FROM pacientes WHERE id = ?`;
-                db.get(sqlPaciente, [cuidador.paciente_id], (err, paciente) => {
-                    if (err) {
-                        return res.status(500).json({ error: err.message });
-                    }
-                    res.json({ 
-                        message: 'Login realizado com sucesso!', 
-                        usuario: { 
-                            ...cuidador, 
-                            tipo_usuario: 'cuidador',
-                            paciente: paciente || null
-                        }
-                    });
-                });
-            } else {
-                // Tentar como profissional
-                const sqlProfissional = `SELECT id, nome, email, registro, tipo FROM profissionais WHERE email = ? AND senha = ?`;
-                db.get(sqlProfissional, [email, senha], (err, profissional) => {
-                    if (err) {
-                        return res.status(500).json({ error: err.message });
-                    }
-                    if (!profissional) {
-                        return res.status(401).json({ error: 'Email ou senha inválidos.' });
-                    }
-                    res.json({ 
-                        message: 'Login realizado com sucesso!', 
-                        usuario: { ...profissional, tipo_usuario: 'profissional' }
-                    });
-                });
-            }
-        });
-    }
-});
-
-// Rota específica para login de profissional (mantida para compatibilidade)
-app.post('/api/login/profissional', (req, res) => {
-    const { email, senha } = req.body;
-    
-    if (!email || !senha) {
-        return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
-    }
-    
-    const sql = `SELECT id, nome, email, registro, tipo FROM profissionais WHERE email = ? AND senha = ?`;
-    db.get(sql, [email, senha], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (!row) {
-            return res.status(401).json({ error: 'Email ou senha inválidos.' });
-        }
-        res.json({ message: 'Login realizado com sucesso!', profissional: row });
-    });
-});
-
-// Rota para cadastro de cuidador
-app.post('/api/cuidadores', (req, res) => {
-    const { nome, email, senha, telefone, paciente_id } = req.body;
-    
-    if (!nome || !email || !senha || !telefone || !paciente_id) {
-        return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
-    }
-    
-    // Verificar se email já existe
-    const sqlCheck = `SELECT id FROM cuidadores WHERE email = ?`;
-    db.get(sqlCheck, [email], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (row) {
-            return res.status(400).json({ error: 'Email já cadastrado.' });
-        }
-        
-        const dataCadastro = new Date().toISOString();
-        const sqlInsert = `
-            INSERT INTO cuidadores (nome, email, senha, telefone, paciente_id, data_cadastro)
-            VALUES (?, ?, ?, ?, ?, ?)
-        `;
-        db.run(sqlInsert, [nome, email, senha, telefone, paciente_id, dataCadastro], function(err) {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Erro ao cadastrar cuidador.' });
-            }
-            res.status(201).json({
-                message: 'Cuidador cadastrado com sucesso!',
-                id: this.lastID,
-                cuidador: { id: this.lastID, nome, email, paciente_id }
-            });
-        });
-    });
-});
-
-// Rota para obter dados do paciente pelo cuidador
-app.get('/api/cuidador/paciente/:cuidadorId', (req, res) => {
-    const { cuidadorId } = req.params;
-    
-    const sql = `
-        SELECT c.*, p.id as paciente_id, p.nome as paciente_nome, p.idade, p.condicao_clinica
-        FROM cuidadores c
-        JOIN pacientes p ON c.paciente_id = p.id
-        WHERE c.id = ?
-    `;
-    db.get(sql, [cuidadorId], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        if (!row) {
-            return res.status(404).json({ error: 'Cuidador não encontrado.' });
-        }
-        res.json(row);
-    });
-});
-
-// Rota para verificar sessão atual
-app.get('/api/verificar-sessao', (req, res) => {
-    // Em produção, isso seria baseado em token JWT
-    // Por enquanto, retorna que a sessão não está autenticada
-    res.json({ autenticado: false });
-});
 
 // ==================== ROTAS DE PACIENTES (RF01) ====================
 app.post('/api/pacientes', (req, res) => {
@@ -239,28 +84,125 @@ app.get('/api/pacientes', (req, res) => {
     });
 });
 
-// ==================== ROTAS DE PROFISSIONAIS (LOGIN) ====================
+// ==================== ROTAS DE AUTENTICAÇÃO (RF11) ====================
+
+// Login unificado
 app.post('/api/login', (req, res) => {
-    const { email, senha } = req.body;
+    const { email, senha, tipo } = req.body;
     
     if (!email || !senha) {
         return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
     }
     
-    const sql = `SELECT id, nome, email, registro, tipo FROM profissionais WHERE email = ? AND senha = ?`;
-    db.get(sql, [email, senha], (err, row) => {
+    // Se o tipo for especificado como 'profissional'
+    if (tipo === 'profissional') {
+        const sql = `SELECT id, nome, email, registro, tipo FROM profissionais WHERE email = ? AND senha = ?`;
+        db.get(sql, [email, senha], (err, row) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            if (!row) {
+                return res.status(401).json({ error: 'Email ou senha inválidos.' });
+            }
+            res.json({ 
+                message: 'Login realizado com sucesso!', 
+                usuario: { ...row, tipo_usuario: 'profissional' }
+            });
+        });
+    } else {
+        // Buscar em cuidadores
+        const sqlCuidador = `SELECT id, nome, email, paciente_id FROM cuidadores WHERE email = ? AND senha = ?`;
+        db.get(sqlCuidador, [email, senha], (err, cuidador) => {
+            if (err) {
+                return res.status(500).json({ error: err.message });
+            }
+            if (cuidador) {
+                // Buscar dados do paciente vinculado
+                const sqlPaciente = `SELECT id, nome, idade, condicao_clinica FROM pacientes WHERE id = ?`;
+                db.get(sqlPaciente, [cuidador.paciente_id], (err, paciente) => {
+                    if (err) {
+                        return res.status(500).json({ error: err.message });
+                    }
+                    res.json({ 
+                        message: 'Login realizado com sucesso!', 
+                        usuario: { 
+                            ...cuidador, 
+                            tipo_usuario: 'cuidador',
+                            paciente: paciente || null
+                        }
+                    });
+                });
+            } else {
+                return res.status(401).json({ error: 'Email ou senha inválidos.' });
+            }
+        });
+    }
+});
+
+// Rota para cadastro de cuidador
+app.post('/api/cuidadores', (req, res) => {
+    const { nome, email, senha, telefone, paciente_id } = req.body;
+    
+    if (!nome || !email || !senha || !telefone || !paciente_id) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+    }
+    
+    // Verificar se email já existe
+    const sqlCheck = `SELECT id FROM cuidadores WHERE email = ?`;
+    db.get(sqlCheck, [email], (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (row) {
+            return res.status(400).json({ error: 'Email já cadastrado.' });
+        }
+        
+        const dataCadastro = new Date().toISOString();
+        const sqlInsert = `
+            INSERT INTO cuidadores (nome, email, senha, telefone, paciente_id, data_cadastro)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        db.run(sqlInsert, [nome, email, senha, telefone, paciente_id, dataCadastro], function(err) {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Erro ao cadastrar cuidador.' });
+            }
+            res.status(201).json({
+                message: 'Cuidador cadastrado com sucesso!',
+                id: this.lastID,
+                cuidador: { id: this.lastID, nome, email, paciente_id }
+            });
+        });
+    });
+});
+
+// Rota para obter dados do paciente pelo cuidador
+app.get('/api/cuidador/paciente/:cuidadorId', (req, res) => {
+    const { cuidadorId } = req.params;
+    
+    const sql = `
+        SELECT c.*, p.id as paciente_id, p.nome as paciente_nome, p.idade, p.condicao_clinica
+        FROM cuidadores c
+        JOIN pacientes p ON c.paciente_id = p.id
+        WHERE c.id = ?
+    `;
+    db.get(sql, [cuidadorId], (err, row) => {
         if (err) {
             return res.status(500).json({ error: err.message });
         }
         if (!row) {
-            return res.status(401).json({ error: 'Email ou senha inválidos.' });
+            return res.status(404).json({ error: 'Cuidador não encontrado.' });
         }
-        res.json({ message: 'Login realizado com sucesso!', profissional: row });
+        res.json(row);
     });
 });
 
+// Rota para verificar sessão atual
+app.get('/api/verificar-sessao', (req, res) => {
+    res.json({ autenticado: false });
+});
+
 // ==================== ROTAS DE PLANOS TERAPÊUTICOS (RF02) ====================
-// server.js - Adicionar/atualizar esta rota
 app.post('/api/planos', (req, res) => {
     const { paciente_id, profissional_id, medicamentos, exercicios, cuidados, observacoes, data_fim } = req.body;
     
@@ -286,24 +228,18 @@ app.post('/api/planos', (req, res) => {
         const planoId = this.lastID;
         let erros = [];
         let insercoesPendentes = 0;
-        let totalInsercoes = 0;
         
         // Contar total de itens a serem inseridos
         const totalMed = medicamentos ? medicamentos.length : 0;
         const totalExe = exercicios ? exercicios.length : 0;
         const totalCuid = cuidados ? cuidados.length : 0;
-        totalInsercoes = totalMed + totalExe + totalCuid;
+        const totalInsercoes = totalMed + totalExe + totalCuid;
         
         if (totalInsercoes === 0) {
-            // Plano sem itens, apenas salvar
             return res.status(201).json({
                 message: 'Plano terapêutico criado com sucesso!',
                 plano_id: planoId,
-                resumo: {
-                    medicamentos: 0,
-                    exercicios: 0,
-                    cuidados: 0
-                }
+                resumo: { medicamentos: 0, exercicios: 0, cuidados: 0 }
             });
         }
         
@@ -314,37 +250,14 @@ app.post('/api/planos', (req, res) => {
                     console.error('Erros ao inserir itens:', erros);
                     return res.status(500).json({ error: 'Erro parcial ao salvar itens do plano.' });
                 }
-                // Buscar o plano completo para retornar
-                const sqlBusca = `
-                    SELECT p.*, 
-                           (SELECT COUNT(*) FROM medicamentos WHERE plano_id = p.id) as total_medicamentos,
-                           (SELECT COUNT(*) FROM exercicios WHERE plano_id = p.id) as total_exercicios,
-                           (SELECT COUNT(*) FROM cuidados WHERE plano_id = p.id) as total_cuidados
-                    FROM planos_terapeuticos p
-                    WHERE p.id = ?
-                `;
-                db.get(sqlBusca, [planoId], (err, planoCompleto) => {
-                    if (err) {
-                        return res.status(201).json({
-                            message: 'Plano terapêutico criado com sucesso!',
-                            plano_id: planoId,
-                            resumo: {
-                                medicamentos: totalMed,
-                                exercicios: totalExe,
-                                cuidados: totalCuid
-                            }
-                        });
+                res.status(201).json({
+                    message: 'Plano terapêutico criado com sucesso!',
+                    plano_id: planoId,
+                    resumo: {
+                        medicamentos: totalMed,
+                        exercicios: totalExe,
+                        cuidados: totalCuid
                     }
-                    res.status(201).json({
-                        message: 'Plano terapêutico criado com sucesso!',
-                        plano: planoCompleto,
-                        plano_id: planoId,
-                        resumo: {
-                            medicamentos: totalMed,
-                            exercicios: totalExe,
-                            cuidados: totalCuid
-                        }
-                    });
                 });
             }
         }
@@ -401,7 +314,6 @@ app.get('/api/planos/paciente/:pacienteId', (req, res) => {
             return res.json({ plano: null });
         }
         
-        // Buscar medicamentos, exercícios e cuidados
         const sqlMed = `SELECT * FROM medicamentos WHERE plano_id = ?`;
         const sqlExe = `SELECT * FROM exercicios WHERE plano_id = ?`;
         const sqlCuid = `SELECT * FROM cuidados WHERE plano_id = ?`;
@@ -409,19 +321,14 @@ app.get('/api/planos/paciente/:pacienteId', (req, res) => {
         db.all(sqlMed, [plano.id], (err, medicamentos) => {
             db.all(sqlExe, [plano.id], (err, exercicios) => {
                 db.all(sqlCuid, [plano.id], (err, cuidados) => {
-                    res.json({
-                        plano,
-                        medicamentos,
-                        exercicios,
-                        cuidados
-                    });
+                    res.json({ plano, medicamentos, exercicios, cuidados });
                 });
             });
         });
     });
 });
 
-// Iniciar servidor
+// ==================== INICIAR SERVIDOR ====================
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
