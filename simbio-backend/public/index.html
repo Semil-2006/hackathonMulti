@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simbio - Cadastro de Paciente</title>
+    <style>
+        /* mesmos estilos da versão anterior, mantendo consistência */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px 24px;
+            text-align: center;
+        }
+        .logo { font-size: 48px; margin-bottom: 12px; }
+        .header h1 { color: white; font-size: 28px; margin-bottom: 8px; }
+        .header p { color: rgba(255,255,255,0.9); font-size: 14px; }
+        .form-content { padding: 32px 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px; }
+        .form-group label .required { color: #ff6b6b; margin-left: 4px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.1);
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .consent-group {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 16px;
+            margin: 24px 0;
+        }
+        .consent-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            cursor: pointer;
+        }
+        .consent-label input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
+        .consent-label span { font-size: 13px; color: #555; line-height: 1.4; }
+        .consent-label a { color: #4facfe; text-decoration: none; }
+        .consent-label a:hover { text-decoration: underline; }
+        .btn-cadastrar {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .btn-cadastrar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .btn-cadastrar:active { transform: translateY(0); }
+        .error-message { color: #ff6b6b; font-size: 12px; margin-top: 6px; display: none; }
+        .error-message.show { display: block; }
+        .input-error { border-color: #ff6b6b !important; }
+        .footer {
+            background: #f8f9fa;
+            padding: 20px 24px;
+            text-align: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer p { font-size: 12px; color: #888; }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            font-size: 14px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #ff6b6b; }
+        @media (max-width: 480px) {
+            .row { grid-template-columns: 1fr; gap: 20px; }
+            .header h1 { font-size: 24px; }
+            .form-content { padding: 24px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌱✨</div>
+            <h1>Simbio</h1>
+            <p>O Elo Humanizado de Recuperação</p>
+        </div>
+
+        <div class="form-content">
+            <form id="cadastroForm">
+                <div class="form-group">
+                    <label>Nome da criança <span class="required">*</span></label>
+                    <input type="text" id="nomeCrianca" placeholder="Ex: Ana Sofia">
+                    <div class="error-message" id="errorNome">Por favor, informe o nome da criança</div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Idade <span class="required">*</span></label>
+                        <input type="number" id="idade" placeholder="Ex: 7" min="0" max="17">
+                        <div class="error-message" id="errorIdade">Por favor, informe a idade</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Data de nascimento</label>
+                        <input type="date" id="dataNascimento">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Nome do responsável <span class="required">*</span></label>
+                    <input type="text" id="responsavel" placeholder="Nome completo do pai/mãe/responsável">
+                    <div class="error-message" id="errorResponsavel">Por favor, informe o nome do responsável</div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>Telefone <span class="required">*</span></label>
+                        <input type="tel" id="telefone" placeholder="(61) 99999-9999">
+                        <div class="error-message" id="errorTelefone">Por favor, informe um telefone válido</div>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail</label>
+                        <input type="email" id="email" placeholder="responsavel@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Condição clínica <span class="required">*</span></label>
+                    <select id="condicaoClinica">
+                        <option value="">Selecione a condição</option>
+                        <option value="pos-operatorio">Pós-operatório</option>
+                        <option value="reabilitacao-fisica">Reabilitação física</option>
+                        <option value="tratamento-cronico">Tratamento crônico</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                    <div class="error-message" id="errorCondicao">Por favor, selecione a condição clínica</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Observações (opcional)</label>
+                    <textarea id="observacoes" placeholder="Informações adicionais que podem ajudar no acompanhamento..."></textarea>
+                </div>
+
+                <div class="consent-group">
+                    <label class="consent-label">
+                        <input type="checkbox" id="consentimento">
+                        <span>Li e concordo com o <a href="#" id="termosLink">Termo de Consentimento Livre e Esclarecido</a> e com a <a href="#" id="privacidadeLink">Política de Privacidade</a> (LGPD).<span class="required">*</span></span>
+                    </label>
+                    <div class="error-message" id="errorConsentimento">Você precisa concordar com os termos para continuar</div>
+                </div>
+
+                <button type="submit" class="btn-cadastrar">🌱 Cadastrar e começar</button>
+            </form>
+        </div>
+
+        <div class="footer">
+            <p>🌿 Seu novo amigo está pronto para te ajudar na recuperação</p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const form = document.getElementById('cadastroForm');
+        const toast = document.getElementById('toast');
+
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Formatação de telefone
+        const telefoneInput = document.getElementById('telefone');
+        telefoneInput.addEventListener('input', () => {
+            let valor = telefoneInput.value.replace(/\D/g, '');
+            if (valor.length <= 11) {
+                if (valor.length <= 2) telefoneInput.value = valor;
+                else if (valor.length <= 7) telefoneInput.value = `(${valor.slice(0,2)}) ${valor.slice(2)}`;
+                else telefoneInput.value = `(${valor.slice(0,2)}) ${valor.slice(2,7)}-${valor.slice(7,11)}`;
+            }
+        });
+
+        // Validação de campos (cliente)
+        function validarCampos() {
+            let isValid = true;
+            const nome = document.getElementById('nomeCrianca').value.trim();
+            const idade = document.getElementById('idade').value;
+            const responsavel = document.getElementById('responsavel').value.trim();
+            const telefone = document.getElementById('telefone').value;
+            const condicao = document.getElementById('condicaoClinica').value;
+            const consentimento = document.getElementById('consentimento').checked;
+
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+
+            if (!nome) {
+                document.getElementById('errorNome').classList.add('show');
+                document.getElementById('nomeCrianca').classList.add('input-error');
+                isValid = false;
+            }
+            if (!idade || idade < 0 || idade > 17) {
+                document.getElementById('errorIdade').classList.add('show');
+                document.getElementById('idade').classList.add('input-error');
+                isValid = false;
+            }
+            if (!responsavel) {
+                document.getElementById('errorResponsavel').classList.add('show');
+                document.getElementById('responsavel').classList.add('input-error');
+                isValid = false;
+            }
+            const telefoneLimpo = telefone.replace(/\D/g, '');
+            if (!telefoneLimpo || telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
+                document.getElementById('errorTelefone').classList.add('show');
+                document.getElementById('telefone').classList.add('input-error');
+                isValid = false;
+            }
+            if (!condicao) {
+                document.getElementById('errorCondicao').classList.add('show');
+                document.getElementById('condicaoClinica').classList.add('input-error');
+                isValid = false;
+            }
+            if (!consentimento) {
+                document.getElementById('errorConsentimento').classList.add('show');
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!validarCampos()) {
+                showToast('Preencha todos os campos obrigatórios corretamente.', 'error');
+                return;
+            }
+
+            const payload = {
+                nome: document.getElementById('nomeCrianca').value.trim(),
+                idade: parseInt(document.getElementById('idade').value),
+                data_nascimento: document.getElementById('dataNascimento').value || null,
+                responsavel: document.getElementById('responsavel').value.trim(),
+                telefone: document.getElementById('telefone').value,
+                email: document.getElementById('email').value.trim() || null,
+                condicao_clinica: document.getElementById('condicaoClinica').value,
+                observacoes: document.getElementById('observacoes').value.trim() || null,
+                consentimento_data: new Date().toISOString()
+            };
+
+            try {
+                const response = await fetch('/api/pacientes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Erro no cadastro');
+
+                showToast(`✨ ${payload.nome} cadastrado com sucesso!`, 'success');
+                // Salvar paciente ativo no localStorage
+                localStorage.setItem('simbio_paciente_ativo', JSON.stringify(data.paciente));
+                setTimeout(() => {
+                    alert(`✅ Cadastro realizado!\nPaciente: ${payload.nome}\nResponsável: ${payload.responsavel}\n\nSeu amigo Simbio está pronto!`);
+                    form.reset();
+                }, 1500);
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+
+        // Remover erros ao digitar
+        const campos = ['nomeCrianca', 'idade', 'responsavel', 'telefone', 'condicaoClinica'];
+        campos.forEach(campo => {
+            const el = document.getElementById(campo);
+            if (el) el.addEventListener('input', () => {
+                document.getElementById(`error${campo.charAt(0).toUpperCase() + campo.slice(1)}`)?.classList.remove('show');
+                el.classList.remove('input-error');
+            });
+        });
+        document.getElementById('consentimento').addEventListener('change', () => {
+            document.getElementById('errorConsentimento').classList.remove('show');
+        });
+
+        // Links de termos
+        document.getElementById('termosLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('📋 Termo de Consentimento Livre e Esclarecido\n\n...');
+        });
+        document.getElementById('privacidadeLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            alert('🔒 Política de Privacidade (LGPD)\n\n...');
+        });
+    </script>
+</body>
+</html>
