@@ -3,29 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Simbio - Meu Amigo</title>
+    <title>Simbio - Meu Polvo</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #B8E1B0 0%, #FFD966 100%);
             min-height: 100vh;
             padding: 20px;
-        }
+            background: url('wallpaper-oceano.png') no-repeat center center fixed;
+            background-size: cover;
 
+        }
         .container {
             max-width: 500px;
             margin: 0 auto;
         }
-
         .header {
             background: white;
-            border-radius: 32px;
+            border-radius: 48px;
             padding: 20px 24px;
             margin-bottom: 20px;
             display: flex;
@@ -33,53 +29,47 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
-
         .header h1 {
+            font-family: 'Poppins', sans-serif;
             font-size: 20px;
-            color: #667eea;
+            color: #8ECAE6;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
+        .header h1 img {
+            width: 32px;
+            height: 32px;
+        }
         .header-buttons {
             display: flex;
             gap: 10px;
         }
-
         .btn-sair, .btn-reset {
-            background: #ff6b6b;
+            background: #FFB347;
             color: white;
             border: none;
             padding: 8px 16px;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
             font-size: 12px;
             transition: all 0.3s;
         }
-
-        .btn-reset {
-            background: #ff9800;
-        }
-
-        .btn-reset:hover {
-            background: #f57c00;
-        }
-
-        .btn-sair:hover {
-            background: #ff5252;
-        }
-
+        .btn-reset { background: #C5B9F2; }
+        .btn-reset:hover { background: #B0A0E0; }
+        .btn-sair:hover { background: #FFA01E; }
         .simbionte-card {
             background: white;
-            border-radius: 48px;
+            border-radius: 60px;
             padding: 32px 24px;
             margin-bottom: 20px;
             text-align: center;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
             position: relative;
             overflow: hidden;
         }
-
         .simbionte-card::before {
             content: '';
             position: absolute;
@@ -87,104 +77,145 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(102,126,234,0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(184,225,176,0.2) 0%, transparent 70%);
             animation: rotate 20s linear infinite;
             pointer-events: none;
         }
-
         @keyframes rotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
-
         .simbionte-imagem {
-            width: 180px;
-            height: 180px;
+            width: 400px;
+            height: 400px;
             margin: 0 auto 20px;
             transition: transform 0.3s;
             cursor: pointer;
+            position: relative;
+            display: inline-block;
         }
-
         .simbionte-imagem img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
             transition: all 0.3s;
+            animation: vibrar 1.2s ease-in-out infinite;
         }
-
-        .simbionte-imagem:hover img {
-            transform: scale(1.05);
+        .simbionte-imagem:hover img { transform: scale(1.05); }
+        .chapeu-overlay {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 100px;
+            pointer-events: none;
+            opacity: 0.95;
         }
-
+        .chapeu-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        }
+        .chapeu-overlay[data-tipo="pirata"] {
+            width: 150px;
+            height: 150px;
+            top: 50px;
+            left: 198px;
+        }
+        .chapeu-botoes {
+            position: absolute;
+            top: -10px;
+            right: -20px;
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .btn-chapeu {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 3px solid white;
+            background: white;
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .btn-chapeu img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+        .btn-chapeu:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+        .btn-chapeu.ativo {
+            border-color: #FFB347;
+            background: #FFF8E7;
+        }
         .simbionte-nome {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: #8ECAE6;
             margin-bottom: 8px;
         }
-
         .simbionte-nivel {
             display: inline-block;
-            background: #e0e7ff;
+            background: #FFF8E7;
             padding: 4px 16px;
             border-radius: 40px;
             font-size: 14px;
-            color: #667eea;
+            color: #FFB347;
             margin-bottom: 16px;
         }
-
         .estagio-indicador {
             display: flex;
             justify-content: center;
             gap: 20px;
             margin: 20px 0;
             padding: 12px;
-            background: #f8f9fa;
+            background: #F9F5E8;
             border-radius: 60px;
         }
-
         .estagio-item {
             text-align: center;
             cursor: pointer;
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 40px;
             transition: all 0.3s;
             background: white;
             border: 2px solid #e0e0e0;
             flex: 1;
         }
-
         .estagio-item.selected {
-            border-color: #667eea;
-            background: #e0e7ff;
+            border-color: #FFB347;
+            background: #FFF8E7;
             transform: scale(1.02);
         }
-
         .estagio-item .estagio-imagem {
-            width: 50px;
-            height: 50px;
+            width: 70px;
+            height: 70px;
             margin: 0 auto 8px;
         }
-
         .estagio-item .estagio-imagem img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             border-radius: 50%;
+            animation: vibrar 0.6s ease-in-out infinite;
         }
-
-        .estagio-item .estagio-nome {
-            font-size: 12px;
-            color: #666;
-            margin-top: 4px;
-        }
-
-        .estagio-item .estagio-desc {
-            font-size: 10px;
-            color: #999;
-        }
-
+        .estagio-item .estagio-nome { font-size: 12px; color: #666; margin-top: 4px; }
+        .estagio-item .estagio-desc { font-size: 10px; color: #999; }
         .progress-bar {
             background: #f0f0f0;
             border-radius: 20px;
@@ -192,150 +223,119 @@
             overflow: hidden;
             margin: 16px 0;
         }
-
         .progress-fill {
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #B8E1B0, #8ECAE6);
             height: 100%;
             width: 0%;
             border-radius: 20px;
             transition: width 0.5s ease;
         }
-
         .stats {
             display: flex;
             justify-content: space-around;
             margin-top: 20px;
             gap: 16px;
         }
-
         .stat-item {
             text-align: center;
             flex: 1;
-            background: #f8f9fa;
+            background: #F9F5E8;
             padding: 12px;
-            border-radius: 20px;
+            border-radius: 30px;
         }
-
         .stat-value {
             font-size: 24px;
             font-weight: bold;
-            color: #667eea;
+            color: #FFB347;
         }
-
         .stat-label {
             font-size: 12px;
             color: #888;
             margin-top: 4px;
         }
-
-        .atividades-card {
+        .atividades-card, .boosts-card {
             background: white;
-            border-radius: 32px;
+            border-radius: 48px;
             padding: 24px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
-
-        .atividades-card h2 {
+        .atividades-card h2, .boosts-card h2 {
+            font-family: 'Poppins', sans-serif;
             font-size: 18px;
-            color: #333;
+            color: #8ECAE6;
             margin-bottom: 16px;
         }
-
         .atividade-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 16px;
-            background: #f8f9fa;
-            border-radius: 20px;
+            background: #F9F5E8;
+            border-radius: 40px;
             margin-bottom: 12px;
-            border-left: 4px solid #667eea;
+            border-left: 8px solid #FFB347;
         }
-
         .atividade-item.concluida {
-            background: #e8f5e9;
-            border-left-color: #4caf50;
+            background: #E8F5E9;
+            border-left-color: #B8E1B0;
         }
-
         .atividade-info h4 {
             font-size: 16px;
             color: #333;
             margin-bottom: 4px;
         }
-
         .atividade-info p {
             font-size: 12px;
             color: #888;
         }
-
         .btn-concluir {
-            background: #4caf50;
-            color: white;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 8px 20px;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
+            font-weight: bold;
         }
-
         .btn-nao-concluir {
-            background: #ff6b6b;
-            color: white;
+            background: #FFB3BA;
+            color: #C62828;
             border: none;
             padding: 8px 20px;
-            border-radius: 30px;
+            border-radius: 40px;
             cursor: pointer;
             margin-left: 8px;
         }
-
         .badge-concluido {
-            background: #4caf50;
-            color: white;
+            background: #B8E1B0;
+            color: #2C5E2E;
             padding: 6px 12px;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 12px;
         }
-
-        .boosts-card {
-            background: white;
-            border-radius: 32px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .boosts-card h2 {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 16px;
-        }
-
         .boost-item {
-            background: #fff8e7;
-            border-radius: 20px;
+            background: #FFF8E7;
+            border-radius: 30px;
             padding: 12px 16px;
             margin-bottom: 12px;
-            border-left: 4px solid #ffc107;
+            border-left: 6px solid #FFB347;
         }
-
         .boost-mensagem {
             font-size: 14px;
             color: #555;
             margin-bottom: 4px;
         }
-
         .boost-remetente {
             font-size: 11px;
-            color: #ffc107;
+            color: #FFB347;
             font-weight: bold;
         }
-
         .empty-state {
             text-align: center;
             padding: 40px;
             color: #888;
         }
-
         .toast {
             position: fixed;
             bottom: 30px;
@@ -349,38 +349,36 @@
             opacity: 0;
             transition: all 0.3s ease;
         }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        .toast.success { background: #4caf50; }
-        .toast.error { background: #ff6b6b; }
-        .toast.info { background: #2196f3; }
-
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #B8E1B0; color: #2C5E2E; }
+        .toast.error { background: #FFB3BA; color: #C62828; }
+        .toast.info { background: #C5B9F2; color: #4A2E6A; }
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
         }
-
-        .anim-pulse img {
-            animation: pulse 0.5s ease-in-out;
-        }
-
+        .anim-pulse img { animation: pulse 0.5s ease-in-out; }
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             25% { transform: translateX(-5px); }
             75% { transform: translateX(5px); }
         }
-
-        .anim-shake img {
-            animation: shake 0.3s ease-in-out;
+        .anim-shake img { animation: shake 0.3s ease-in-out; }
+        @keyframes vibrar {
+            0%, 100% { transform: translateY(0) rotateZ(0deg); }
+            25% { transform: translateY(-1px) rotateZ(-0.3deg); }
+            75% { transform: translateY(1px) rotateZ(0.3deg); }
         }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500;600&display=swap');
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🌱 Olá, <span id="cuidadorNome">Cuidador</span>!</h1>
+            <h1>
+                <img src="octopus-icon.svg" alt="Polvo Simbio">
+                Olá, <span id="cuidadorNome">Cuidador</span>!
+            </h1>
             <div class="header-buttons">
                 <button class="btn-reset" onclick="resetarTudo()">🔄 Resetar Tudo</button>
                 <button class="btn-sair" onclick="sair()">Sair</button>
@@ -388,108 +386,76 @@
         </div>
 
         <div class="simbionte-card">
-            <div class="simbionte-imagem">
-                <img id="mascoteImg" src="triste.jpeg" alt="Árvore da Vida">
+            <div style="display: flex; justify-content: center;">
+                <div class="simbionte-imagem">
+                    <img id="mascoteImg" src="triste.jpeg" alt="Polvo Simbio">
+                    <div class="chapeu-overlay" id="chapeuOverlay" style="display: none;"></div>
+                    <div class="chapeu-botoes">
+                        <button class="btn-chapeu" onclick="selecionarChapeu('cowboy')" title="Chapéu de Cowboy">
+                            <img src="cowboy.png" alt="Cowboy">
+                        </button>
+                        <button class="btn-chapeu" onclick="selecionarChapeu('flores')" title="Coroa de Flores">
+                            <img src="flores.svg" alt="Flores">
+                        </button>
+                        <button class="btn-chapeu" onclick="selecionarChapeu('pirata')" title="Chapéu de Pirata">
+                            <img src="pirata.png" alt="Pirata">
+                        </button>
+                        <button class="btn-chapeu" onclick="removerChapeu()" title="Remover Chapéu">
+                            ✕
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="simbionte-nome" id="simbionteNome">Simbio</div>
-            <div class="simbionte-nivel" id="simbionteNivel">Estágio: Cansado</div>
+            <div class="simbionte-nome" id="simbionteNome">Meu Polvo</div>
+            <div class="simbionte-nivel" id="simbionteNivel">Estágio: Precisa de carinho</div>
             
-            <!-- 3 Estágios: Cansado, Feliz, Muito Feliz -->
             <div class="estagio-indicador">
                 <div class="estagio-item" data-estagio="cansado" onclick="selecionarEstagio('cansado')">
-                    <div class="estagio-imagem">
-                        <img src="triste.jpeg" alt="Cansado">
-                    </div>
-                    <div class="estagio-nome">😔 Cansado</div>
-                    <div class="estagio-desc">Precisa de cuidados</div>
+                    <div class="estagio-imagem"><img src="triste.png" alt="Precisa de carinho"></div>
+                    <div class="estagio-nome">😔 Precisa de carinho</div>
+                    <div class="estagio-desc">Vamos cuidar juntos</div>
                 </div>
                 <div class="estagio-item" data-estagio="feliz" onclick="selecionarEstagio('feliz')">
-                    <div class="estagio-imagem">
-                        <img src="feliz.jpeg" alt="Feliz">
-                    </div>
-                    <div class="estagio-nome">😊 Feliz</div>
+                    <div class="estagio-imagem"><img src="feliz.png" alt="Crescente"></div>
+                    <div class="estagio-nome">😊 Crescente</div>
                     <div class="estagio-desc">Evoluindo bem</div>
                 </div>
                 <div class="estagio-item" data-estagio="muito_feliz" onclick="selecionarEstagio('muito_feliz')">
-                    <div class="estagio-imagem">
-                        <img src="muito_feliz.jpeg" alt="Muito Feliz">
-                    </div>
-                    <div class="estagio-nome">😍 Muito Feliz</div>
+                    <div class="estagio-imagem"><img src="muito_feliz.png" alt="Florescendo"></div>
+                    <div class="estagio-nome">😍 Florescendo</div>
                     <div class="estagio-desc">Plena vitalidade</div>
                 </div>
             </div>
             
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
             <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="diasConsecutivos">0</div>
-                    <div class="stat-label">Dias seguidos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="totalAtividades">0</div>
-                    <div class="stat-label">Atividades</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="taxaAcerto">0%</div>
-                    <div class="stat-label">Taxa de sucesso</div>
-                </div>
+                <div class="stat-item"><div class="stat-value" id="diasConsecutivos">0</div><div class="stat-label">Dias seguidos</div></div>
+                <div class="stat-item"><div class="stat-value" id="totalAtividades">0</div><div class="stat-label">Atividades</div></div>
+                <div class="stat-item"><div class="stat-value" id="taxaAcerto">0%</div><div class="stat-label">Taxa de sucesso</div></div>
             </div>
         </div>
 
         <div class="atividades-card">
             <h2>📋 Atividades de Hoje</h2>
-            <div id="atividadesList">
-                <div class="empty-state">Carregando atividades...</div>
-            </div>
+            <div id="atividadesList"><div class="empty-state">Carregando atividades...</div></div>
         </div>
 
         <div class="boosts-card">
             <h2>💌 Mensagens de Apoio</h2>
-            <div id="boostsList">
-                <div class="empty-state">Nenhuma mensagem ainda.</div>
-            </div>
+            <div id="boostsList"><div class="empty-state">Nenhuma mensagem ainda.</div></div>
         </div>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
-        let usuario = null;
-        let paciente = null;
-        let atividades = [];
-        let boosts = [];
-        let estagioAtual = 'cansado';
-        
-        let nivel = 1;
-        let experiencia = 0;
-        let diasConsecutivos = 0;
-        let totalAtividadesConcluidas = 0;
-        let totalAtividades = 0;
-        
-        // 3 ESTÁGIOS: Cansado, Feliz, Muito Feliz
+        let usuario = null, paciente = null, atividades = [], boosts = [], estagioAtual = 'cansado';
+        let nivel = 1, experiencia = 0, diasConsecutivos = 0, totalAtividadesConcluidas = 0, totalAtividades = 0;
         const ESTAGIOS = {
-            cansado: {
-                src: 'triste.jpeg',
-                nome: 'Cansado',
-                emoji: '😔',
-                descricao: 'Precisa de cuidados'
-            },
-            feliz: {
-                src: 'feliz.jpeg',
-                nome: 'Feliz',
-                emoji: '😊',
-                descricao: 'Evoluindo bem'
-            },
-            muito_feliz: {
-                src: 'muito_feliz.jpeg',
-                nome: 'Muito Feliz',
-                emoji: '😍',
-                descricao: 'Plena vitalidade'
-            }
+            cansado: { src: 'triste.png', nome: 'Precisa de carinho', emoji: '😔', descricao: 'Vamos cuidar juntos' },
+            feliz: { src: 'feliz.png', nome: 'Crescente', emoji: '😊', descricao: 'Evoluindo bem' },
+            muito_feliz: { src: 'muito_feliz.png', nome: 'Florescendo', emoji: '😍', descricao: 'Plena vitalidade' }
         };
-        
         const EXPERIENCIA_POR_NIVEL = 100;
         
         function showToast(message, type = 'success') {
@@ -498,127 +464,82 @@
             toast.className = `toast ${type} show`;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-        
         function animarSimbionte(animacao) {
             const container = document.querySelector('.simbionte-imagem');
             container.classList.add(animacao);
             setTimeout(() => container.classList.remove(animacao), 500);
         }
-        
         function selecionarEstagio(estagio) {
             estagioAtual = estagio;
             atualizarImagem();
-            
-            // Atualizar seleção visual
-            document.querySelectorAll('.estagio-item').forEach(item => {
-                item.classList.remove('selected');
-            });
+            document.querySelectorAll('.estagio-item').forEach(item => item.classList.remove('selected'));
             document.querySelector(`[data-estagio="${estagio}"]`).classList.add('selected');
-            
             showToast(`✨ Estágio: ${ESTAGIOS[estagio].nome} ${ESTAGIOS[estagio].emoji}`, 'info');
         }
-        
         function atualizarImagem() {
             const imgElement = document.getElementById('mascoteImg');
             const nomeElement = document.getElementById('simbionteNome');
             const nivelElement = document.getElementById('simbionteNivel');
-            
             imgElement.src = ESTAGIOS[estagioAtual].src;
-            nomeElement.textContent = `Simbio - ${ESTAGIOS[estagioAtual].nome} ${ESTAGIOS[estagioAtual].emoji}`;
+            nomeElement.textContent = `Meu Polvo - ${ESTAGIOS[estagioAtual].nome} ${ESTAGIOS[estagioAtual].emoji}`;
             nivelElement.textContent = `Estágio: ${ESTAGIOS[estagioAtual].nome} | Nível ${nivel}`;
         }
-        
         function carregarUsuario() {
             const stored = localStorage.getItem('simbio_usuario');
-            if (!stored) {
-                window.location.href = '/login.html';
-                return null;
-            }
+            if (!stored) { window.location.href = '/login.html'; return null; }
             usuario = JSON.parse(stored);
-            
-            if (usuario.tipo_usuario !== 'cuidador') {
-                window.location.href = '/lista-pacientes.html';
-                return null;
-            }
-            
+            if (usuario.tipo_usuario !== 'cuidador') { window.location.href = '/lista-pacientes.html'; return null; }
             paciente = usuario.paciente;
             document.getElementById('cuidadorNome').textContent = usuario.nome.split(' ')[0];
             return usuario;
         }
-        
         function atualizarSimbionte() {
             const progressFill = document.getElementById('progressFill');
             const diasSpan = document.getElementById('diasConsecutivos');
             const totalSpan = document.getElementById('totalAtividades');
             const taxaSpan = document.getElementById('taxaAcerto');
-            
             nivel = Math.floor(experiencia / EXPERIENCIA_POR_NIVEL) + 1;
             const expAtual = experiencia % EXPERIENCIA_POR_NIVEL;
             const progresso = (expAtual / EXPERIENCIA_POR_NIVEL) * 100;
-            
             progressFill.style.width = `${progresso}%`;
-            
             diasSpan.textContent = diasConsecutivos;
             totalSpan.textContent = totalAtividadesConcluidas;
             const taxa = totalAtividades > 0 ? (totalAtividadesConcluidas / totalAtividades) * 100 : 0;
             taxaSpan.textContent = `${Math.round(taxa)}%`;
         }
-        
         async function carregarPlanoAtivo() {
             if (!paciente) return;
-            
             try {
                 const response = await fetch(`/api/planos/paciente/${paciente.id}`);
                 const data = await response.json();
-                
                 if (data.plano) {
                     atividades = [];
-                    
                     if (data.medicamentos && data.medicamentos.length > 0) {
                         data.medicamentos.forEach(med => {
-                            atividades.push({
-                                id: `med_${med.id}`,
-                                tipo: 'medicamento',
-                                nome: med.nome,
-                                descricao: `${med.dosagem} - ${med.horarios}`,
-                                instrucoes: med.instrucoes,
-                                concluido: false
-                            });
+                            atividades.push({ id: `med_${med.id}`, tipo: 'medicamento', nome: med.nome, descricao: `${med.dosagem} - ${med.horarios}`, instrucoes: med.instrucoes, concluido: false });
                         });
                     }
-                    
                     if (data.exercicios && data.exercicios.length > 0) {
                         data.exercicios.forEach(exe => {
-                            atividades.push({
-                                id: `exe_${exe.id}`,
-                                tipo: 'exercicio',
-                                nome: exe.nome,
-                                descricao: `${exe.frequencia} - ${exe.duracao}`,
-                                instrucoes: exe.instrucoes,
-                                concluido: false
-                            });
+                            atividades.push({ id: `exe_${exe.id}`, tipo: 'exercicio', nome: exe.nome, descricao: `${exe.frequencia} - ${exe.duracao}`, instrucoes: exe.instrucoes, concluido: false });
                         });
                     }
-                    
                     totalAtividades = atividades.length;
                     renderizarAtividades();
                 } else {
-                    document.getElementById('atividadesList').innerHTML = `<div class="empty-state">🌱 Nenhum plano ativo no momento.</div>`;
+                    document.getElementById('atividadesList').innerHTML = `<div class="empty-state">🐙 Nenhum plano ativo no momento.</div>`;
                 }
             } catch (err) {
                 console.error('Erro:', err);
                 document.getElementById('atividadesList').innerHTML = `<div class="empty-state">⚠️ Erro ao carregar atividades.</div>`;
             }
         }
-        
         function renderizarAtividades() {
             const container = document.getElementById('atividadesList');
-            
             if (!atividades || atividades.length === 0) {
                 container.innerHTML = '<div class="empty-state">✨ Nenhuma atividade pendente!</div>';
                 return;
             }
-            
             container.innerHTML = atividades.map(atv => `
                 <div class="atividade-item ${atv.concluido ? 'concluida' : ''}">
                     <div class="atividade-info">
@@ -628,83 +549,62 @@
                     </div>
                     <div>
                         ${!atv.concluido ? `
-                            <button class="btn-concluir" onclick="concluirAtividade('${atv.id}')">✅ Concluir</button>
-                            <button class="btn-nao-concluir" onclick="naoConcluirAtividade('${atv.id}')">⏰ Não consegui</button>
-                        ` : `
-                            <span class="badge-concluido">✓ Concluído</span>
-                        `}
+                            <button class="btn-concluir" onclick="concluirAtividade('${atv.id}')">✅ Fiz!</button>
+                            <button class="btn-nao-concluir" onclick="naoConcluirAtividade('${atv.id}')">😢 Ainda não</button>
+                        ` : `<span class="badge-concluido">✓ Concluído</span>`}
                     </div>
                 </div>
             `).join('');
         }
-        
         window.concluirAtividade = function(id) {
             const atividade = atividades.find(a => a.id === id);
             if (!atividade || atividade.concluido) return;
-            
             atividade.concluido = true;
             totalAtividadesConcluidas++;
             experiencia += 20;
-            
             const todasConcluidas = atividades.every(a => a.concluido);
-            
             if (todasConcluidas) {
                 experiencia += 50;
                 diasConsecutivos++;
-                showToast('🎉 Parabéns! Você completou todas as atividades!', 'success');
+                showToast('🎉 Parabéns! Você completou todas as atividades! Seu polvo está crescendo!', 'success');
                 animarSimbionte('anim-pulse');
             } else {
-                showToast(`✨ Ótimo! "${atividade.nome}" concluído!`, 'success');
+                showToast(`✨ Ótimo! "${atividade.nome}" concluído! Você está cuidando do seu polvo.`, 'success');
                 animarSimbionte('anim-pulse');
             }
-            
             atualizarSimbionte();
             renderizarAtividades();
             salvarProgresso();
         };
-        
         window.naoConcluirAtividade = function(id) {
             showToast('💚 Tudo bem! Vocês podem tentar juntos amanhã.', 'info');
             animarSimbionte('anim-shake');
         };
-        
         window.resetarTudo = function() {
             if (confirm('🔄 Resetar tudo vai apagar todo o progresso. Deseja continuar?')) {
-                experiencia = 0;
-                diasConsecutivos = 0;
-                totalAtividadesConcluidas = 0;
-                
+                experiencia = 0; diasConsecutivos = 0; totalAtividadesConcluidas = 0;
                 atividades.forEach(atv => atv.concluido = false);
-                
                 estagioAtual = 'cansado';
                 atualizarImagem();
-                
                 document.querySelectorAll('.estagio-item').forEach(item => item.classList.remove('selected'));
                 document.querySelector('[data-estagio="cansado"]').classList.add('selected');
-                
                 atualizarSimbionte();
                 renderizarAtividades();
                 salvarProgresso();
-                
-                showToast('🔄 Tudo foi resetado! Sua árvore voltou ao estágio Cansado.', 'info');
+                showToast('🔄 Tudo foi resetado! Seu polvo voltou ao estágio Precisa de carinho.', 'info');
                 animarSimbionte('anim-pulse');
             }
         };
-        
         function carregarBoosts() {
             boosts = [
                 { mensagem: 'Lembre-se de tomar o remédio no horário! 💪', remetente: 'Dra. Ana Silva', data: new Date().toLocaleString() },
-                { mensagem: 'Continue assim, sua árvore está crescendo! 🌟', remetente: 'Enf. Carlos', data: new Date().toLocaleString() }
+                { mensagem: 'Continue assim, seu polvo está crescendo! 🌟', remetente: 'Enf. Carlos', data: new Date().toLocaleString() }
             ];
             renderizarBoosts();
         }
-        
         function renderizarBoosts() {
             const container = document.getElementById('boostsList');
-            if (!boosts.length) {
-                container.innerHTML = '<div class="empty-state">Nenhuma mensagem ainda.</div>';
-                return;
-            }
+            if (!boosts.length) { container.innerHTML = '<div class="empty-state">Nenhuma mensagem ainda.</div>'; return; }
             container.innerHTML = boosts.map(boost => `
                 <div class="boost-item">
                     <div class="boost-mensagem">💬 ${boost.mensagem}</div>
@@ -712,15 +612,10 @@
                 </div>
             `).join('');
         }
-        
         function salvarProgresso() {
-            const progresso = {
-                experiencia, diasConsecutivos, totalAtividadesConcluidas, totalAtividades,
-                estagioAtual, atividadesConcluidas: atividades.filter(a => a.concluido).map(a => a.id)
-            };
+            const progresso = { experiencia, diasConsecutivos, totalAtividadesConcluidas, totalAtividades, estagioAtual, atividadesConcluidas: atividades.filter(a => a.concluido).map(a => a.id) };
             localStorage.setItem(`simbio_progresso_${paciente.id}`, JSON.stringify(progresso));
         }
-        
         function carregarProgresso() {
             const saved = localStorage.getItem(`simbio_progresso_${paciente.id}`);
             if (saved) {
@@ -734,20 +629,43 @@
                     document.querySelector(`[data-estagio="${estagioAtual}"]`).classList.add('selected');
                 }
                 if (progresso.atividadesConcluidas) {
-                    atividades.forEach(atv => {
-                        if (progresso.atividadesConcluidas.includes(atv.id)) atv.concluido = true;
-                    });
+                    atividades.forEach(atv => { if (progresso.atividadesConcluidas.includes(atv.id)) atv.concluido = true; });
                 }
             } else {
                 selecionarEstagio('cansado');
             }
         }
-        
         function sair() {
             localStorage.removeItem('simbio_usuario');
             window.location.href = '/login.html';
         }
-        
+        let chapeuAtual = null;
+        const CHAPEUS = {
+            cowboy: { src: 'cowboy.png', nome: 'Cowboy' },
+            flores: { src: 'flores.svg', nome: 'Flores' },
+            pirata: { src: 'pirata.png', nome: 'Pirata' }
+        };
+        window.selecionarChapeu = function(tipo) {
+            chapeuAtual = tipo;
+            const overlay = document.getElementById('chapeuOverlay');
+            overlay.setAttribute('data-tipo', tipo);
+            overlay.innerHTML = `<img src="${CHAPEUS[tipo].src}" alt="${CHAPEUS[tipo].nome}">`;
+            overlay.style.display = 'block';
+            document.querySelectorAll('.btn-chapeu').forEach((btn, idx) => {
+                if (idx < 3) btn.classList.remove('ativo');
+            });
+            document.querySelectorAll('.btn-chapeu')[['cowboy', 'flores', 'pirata'].indexOf(tipo)].classList.add('ativo');
+            showToast(`👒 Seu polvo está usando ${CHAPEUS[tipo].nome}!`, 'info');
+            animarSimbionte('anim-pulse');
+        };
+        window.removerChapeu = function() {
+            chapeuAtual = null;
+            const overlay = document.getElementById('chapeuOverlay');
+            overlay.removeAttribute('data-tipo');
+            overlay.style.display = 'none';
+            document.querySelectorAll('.btn-chapeu').forEach(btn => btn.classList.remove('ativo'));
+            showToast('👒 Chapéu removido!', 'info');
+        };
         async function init() {
             if (!carregarUsuario()) return;
             await carregarPlanoAtivo();
@@ -756,7 +674,6 @@
             atualizarSimbionte();
             renderizarAtividades();
         }
-        
         init();
     </script>
 </body>

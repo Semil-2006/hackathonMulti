@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simbio - Cadastro de Paciente</title>
+    <title>Simbio - Cadastro da criança</title>
     <style>
-        /* mesmos estilos da versão anterior, mantendo consistência */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #FFB347 0%, #FFD966 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -20,7 +19,7 @@
             max-width: 500px;
             width: 100%;
             background: white;
-            border-radius: 32px;
+            border-radius: 48px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             overflow: hidden;
             animation: fadeInUp 0.5s ease-out;
@@ -30,41 +29,59 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: #8ECAE6;
             padding: 30px 24px;
             text-align: center;
+            border-radius: 48px 48px 0 0;
         }
-        .logo { font-size: 48px; margin-bottom: 12px; }
-        .header h1 { color: white; font-size: 28px; margin-bottom: 8px; }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 12px;
+        }
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            color: white;
+            text-shadow: 2px 2px 0 #FFB347;
+            margin-bottom: 8px;
+        }
         .header p { color: rgba(255,255,255,0.9); font-size: 14px; }
         .form-content { padding: 32px 24px; }
         .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; font-size: 14px; }
-        .form-group label .required { color: #ff6b6b; margin-left: 4px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .form-group label .required { color: #FF6B6B; margin-left: 4px; }
         .form-group input, .form-group select, .form-group textarea {
             width: 100%;
             padding: 14px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 16px;
+            border-radius: 30px;
             font-size: 16px;
             transition: all 0.3s ease;
-            font-family: inherit;
+            font-family: 'Quicksand', sans-serif;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79,172,254,0.1);
+            border-color: #FFB347;
+            box-shadow: 0 0 0 3px rgba(255,179,71,0.2);
         }
-        .form-group textarea { resize: vertical; min-height: 80px; }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
+        .form-group textarea { resize: vertical; min-height: 80px; border-radius: 24px; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .consent-group {
-            background: #f8f9fa;
+            background: #FFF8E7;
             padding: 16px;
-            border-radius: 16px;
+            border-radius: 32px;
             margin: 24px 0;
         }
         .consent-label {
@@ -75,31 +92,35 @@
         }
         .consent-label input { width: 20px; height: 20px; margin-top: 2px; cursor: pointer; }
         .consent-label span { font-size: 13px; color: #555; line-height: 1.4; }
-        .consent-label a { color: #4facfe; text-decoration: none; }
+        .consent-label a { color: #FFB347; text-decoration: none; }
         .consent-label a:hover { text-decoration: underline; }
         .btn-cadastrar {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 16px;
-            border-radius: 40px;
-            font-size: 18px;
+            border-radius: 60px;
+            font-size: 20px;
             font-weight: bold;
+            font-family: 'Poppins', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 8px;
         }
-        .btn-cadastrar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
-        .btn-cadastrar:active { transform: translateY(0); }
-        .error-message { color: #ff6b6b; font-size: 12px; margin-top: 6px; display: none; }
+        .btn-cadastrar:hover {
+            transform: scale(1.02);
+            background: #A0D090;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .error-message { color: #FF6B6B; font-size: 12px; margin-top: 6px; display: none; }
         .error-message.show { display: block; }
-        .input-error { border-color: #ff6b6b !important; }
+        .input-error { border-color: #FF6B6B !important; }
         .footer {
-            background: #f8f9fa;
+            background: #F9F5E8;
             padding: 20px 24px;
             text-align: center;
-            border-top: 1px solid #e0e0e0;
+            border-top: 1px solid #FFE0A3;
         }
         .footer p { font-size: 12px; color: #888; }
         .toast {
@@ -117,21 +138,24 @@
             transition: all 0.3s ease;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast.success { background: #4caf50; }
-        .toast.error { background: #ff6b6b; }
+        .toast.success { background: #B8E1B0; color: #2C5E2E; }
+        .toast.error { background: #FFB3BA; color: #C62828; }
         @media (max-width: 480px) {
             .row { grid-template-columns: 1fr; gap: 20px; }
-            .header h1 { font-size: 24px; }
+            .header h1 { font-size: 28px; }
             .form-content { padding: 24px 20px; }
         }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500;600&display=swap');
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">🌱✨</div>
+            <div class="logo">
+                <img src="octopus-icon.svg" alt="Simbio - Polvo amigo">
+            </div>
             <h1>Simbio</h1>
-            <p>O Elo Humanizado de Recuperação</p>
+            <p>Vamos começar essa aventura de cuidados com carinho</p>
         </div>
 
         <div class="form-content">
@@ -156,7 +180,7 @@
 
                 <div class="form-group">
                     <label>Nome do responsável <span class="required">*</span></label>
-                    <input type="text" id="responsavel" placeholder="Nome completo do pai/mãe/responsável">
+                    <input type="text" id="responsavel" placeholder="Nome completo do papai/mamãe/responsável">
                     <div class="error-message" id="errorResponsavel">Por favor, informe o nome do responsável</div>
                 </div>
 
@@ -186,23 +210,23 @@
 
                 <div class="form-group">
                     <label>Observações (opcional)</label>
-                    <textarea id="observacoes" placeholder="Informações adicionais que podem ajudar no acompanhamento..."></textarea>
+                    <textarea id="observacoes" placeholder="Conte para a gente algo que ajude a cuidar melhor..."></textarea>
                 </div>
 
                 <div class="consent-group">
                     <label class="consent-label">
                         <input type="checkbox" id="consentimento">
-                        <span>Li e concordo com o <a href="#" id="termosLink">Termo de Consentimento Livre e Esclarecido</a> e com a <a href="#" id="privacidadeLink">Política de Privacidade</a> (LGPD).<span class="required">*</span></span>
+                        <span>Li e concordo com o <a href="#" id="termosLink">Termo de Consentimento</a> e com a <a href="#" id="privacidadeLink">Política de Privacidade</a> (LGPD).<span class="required">*</span></span>
                     </label>
-                    <div class="error-message" id="errorConsentimento">Você precisa concordar com os termos para continuar</div>
+                    <div class="error-message" id="errorConsentimento">Você precisa concordar para continuar</div>
                 </div>
 
-                <button type="submit" class="btn-cadastrar">🌱 Cadastrar e começar</button>
+                <button type="submit" class="btn-cadastrar">🐙 Começar essa aventura</button>
             </form>
         </div>
 
         <div class="footer">
-            <p>🌿 Seu novo amigo está pronto para te ajudar na recuperação</p>
+            <p>🐙 Seu novo amigo Simbio está pronto para ajudar na recuperação com muito carinho</p>
         </div>
     </div>
 
@@ -229,7 +253,6 @@
             }
         });
 
-        // Validação de campos (cliente)
         function validarCampos() {
             let isValid = true;
             const nome = document.getElementById('nomeCrianca').value.trim();
@@ -278,7 +301,7 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!validarCampos()) {
-                showToast('Preencha todos os campos obrigatórios corretamente.', 'error');
+                showToast('🐙 Ops! Preencha todos os campos com a ajuda de um adulto.', 'error');
                 return;
             }
 
@@ -303,13 +326,12 @@
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Erro no cadastro');
 
-                showToast(`✨ ${payload.nome} cadastrado com sucesso!`, 'success');
-                // Salvar paciente ativo no localStorage
+                showToast(`🎉 Que legal! ${payload.nome} foi cadastrado(a) com muito carinho!`, 'success');
                 localStorage.setItem('simbio_paciente_ativo', JSON.stringify(data.paciente));
                 setTimeout(() => {
-                    alert(`✅ Cadastro realizado!\nPaciente: ${payload.nome}\nResponsável: ${payload.responsavel}\n\nSeu amigo Simbio está pronto!`);
+                    showToast(`🐙 Agora você pode começar a cuidar e ver seu polvinho crescer!`, 'success');
                     form.reset();
-                }, 1500);
+                }, 2000);
             } catch (err) {
                 showToast(err.message, 'error');
             }
@@ -328,7 +350,6 @@
             document.getElementById('errorConsentimento').classList.remove('show');
         });
 
-        // Links de termos
         document.getElementById('termosLink').addEventListener('click', (e) => {
             e.preventDefault();
             alert('📋 Termo de Consentimento Livre e Esclarecido\n\n...');

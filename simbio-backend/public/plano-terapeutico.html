@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simbio - Plano Terapêutico</title>
+    <title>Simbio - Plano de Carinho</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Quicksand', sans-serif;
+            background: #F9F5E8;
             min-height: 100vh;
             padding: 20px;
         }
@@ -17,8 +17,8 @@
             margin: 0 auto;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 24px;
+            background: linear-gradient(135deg, #8ECAE6 0%, #C5B9F2 100%);
+            border-radius: 48px;
             padding: 24px 32px;
             margin-bottom: 24px;
             color: white;
@@ -28,7 +28,17 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-        .header h1 { font-size: 24px; }
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 img {
+            width: 40px;
+            height: 40px;
+        }
         .btn-voltar {
             background: rgba(255,255,255,0.2);
             border: none;
@@ -40,13 +50,14 @@
         }
         .card {
             background: white;
-            border-radius: 24px;
+            border-radius: 48px;
             padding: 24px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .card h2 {
-            color: #667eea;
+            font-family: 'Poppins', sans-serif;
+            color: #FFB347;
             margin-bottom: 20px;
             font-size: 20px;
             display: flex;
@@ -66,20 +77,20 @@
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 12px;
+            border-radius: 30px;
             font-size: 14px;
-            font-family: inherit;
+            font-family: 'Quicksand', sans-serif;
         }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #FFB347;
         }
         .item-card {
-            background: #f8f9fa;
-            border-radius: 16px;
+            background: #FFF8E7;
+            border-radius: 32px;
             padding: 16px;
             margin-bottom: 16px;
-            border-left: 4px solid #667eea;
+            border-left: 8px solid #FFB347;
         }
         .item-header {
             display: flex;
@@ -89,20 +100,20 @@
         }
         .item-header h3 {
             font-size: 16px;
-            color: #667eea;
+            color: #FFB347;
         }
         .btn-remover {
-            background: #ff6b6b;
-            color: white;
+            background: #FFB3BA;
+            color: #C62828;
             border: none;
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 30px;
             cursor: pointer;
             font-size: 12px;
         }
         .btn-add {
-            background: #e0e7ff;
-            color: #667eea;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 10px 16px;
             border-radius: 40px;
@@ -113,24 +124,20 @@
         }
         .btn-salvar {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 16px;
-            border-radius: 40px;
-            font-size: 18px;
+            border-radius: 60px;
+            font-size: 20px;
             font-weight: bold;
+            font-family: 'Poppins', sans-serif;
             cursor: pointer;
             transition: all 0.3s;
             margin-top: 16px;
         }
-        .btn-salvar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
-        .row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-        }
-        
+        .btn-salvar:hover { transform: scale(1.02); background: #A0D090; }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .modal {
             display: none;
             position: fixed;
@@ -143,12 +150,10 @@
             justify-content: center;
             align-items: center;
         }
-        .modal.show {
-            display: flex;
-        }
+        .modal.show { display: flex; }
         .modal-content {
             background: white;
-            border-radius: 32px;
+            border-radius: 60px;
             max-width: 500px;
             width: 90%;
             max-height: 80vh;
@@ -160,49 +165,37 @@
             to { opacity: 1; transform: scale(1); }
         }
         .modal-header {
-            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            background: #B8E1B0;
             padding: 24px;
             text-align: center;
-            color: white;
-            border-radius: 32px 32px 0 0;
+            color: #4A6A3B;
+            border-radius: 60px 60px 0 0;
         }
-        .modal-header .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-        .modal-header h3 {
-            font-size: 24px;
-            margin-bottom: 8px;
-        }
-        .modal-body {
-            padding: 24px;
-        }
+        .modal-header .icon { font-size: 48px; margin-bottom: 12px; }
+        .modal-header h3 { font-family: 'Poppins', sans-serif; font-size: 24px; margin-bottom: 8px; }
+        .modal-body { padding: 24px; }
         .resumo-item {
-            background: #f8f9fa;
-            border-radius: 16px;
+            background: #FFF8E7;
+            border-radius: 32px;
             padding: 16px;
             margin-bottom: 16px;
-            border-left: 4px solid #4caf50;
+            border-left: 8px solid #FFB347;
         }
-        .resumo-item h4 {
-            color: #333;
-            margin-bottom: 12px;
-            font-size: 16px;
-        }
+        .resumo-item h4 { color: #FFB347; margin-bottom: 12px; font-size: 16px; }
         .badge {
             display: inline-block;
-            background: #e0e7ff;
-            color: #667eea;
+            background: #FFF8E7;
+            color: #FFB347;
             padding: 4px 12px;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 12px;
             margin-right: 8px;
             margin-bottom: 8px;
         }
         .btn-fechar {
             width: 100%;
-            background: #667eea;
-            color: white;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 14px;
             border-radius: 40px;
@@ -211,8 +204,6 @@
             cursor: pointer;
             margin-top: 16px;
         }
-        .btn-fechar:hover { background: #5a67d8; }
-        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -227,13 +218,8 @@
             transition: all 0.3s ease;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast.success { background: #4caf50; }
-        .toast.error { background: #ff6b6b; }
-        
-        @media (max-width: 600px) {
-            .row { grid-template-columns: 1fr; }
-        }
-        
+        .toast.success { background: #B8E1B0; color: #2C5E2E; }
+        .toast.error { background: #FFB3BA; color: #C62828; }
         .loader {
             display: none;
             position: fixed;
@@ -246,25 +232,28 @@
             justify-content: center;
             align-items: center;
         }
-        .loader.show {
-            display: flex;
-        }
+        .loader.show { display: flex; }
         .spinner {
             width: 50px;
             height: 50px;
             border: 5px solid #fff;
-            border-top-color: #667eea;
+            border-top-color: #FFB347;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 600px) { .row { grid-template-columns: 1fr; } }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500;600&display=swap');
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div>
-                <h1>📋 Plano Terapêutico</h1>
+                <h1>
+                    <img src="octopus-icon.svg" alt="Simbio">
+                    Plano de Carinho
+                </h1>
                 <p id="pacienteInfo" style="margin-top: 8px; opacity: 0.9;"></p>
             </div>
             <button class="btn-voltar" onclick="voltar()">← Voltar</button>
@@ -274,7 +263,7 @@
             <h2>📌 Informações Gerais</h2>
             <div class="form-group">
                 <label>Observações do plano</label>
-                <textarea id="observacoes" rows="3" placeholder="Orientações gerais para o cuidador..."></textarea>
+                <textarea id="observacoes" rows="3" placeholder="Orientações para o cuidador e a criança..."></textarea>
             </div>
             <div class="row">
                 <div class="form-group">
@@ -302,391 +291,189 @@
             <button type="button" class="btn-add" onclick="adicionarCuidado()">+ Adicionar Cuidado</button>
         </div>
 
-        <button class="btn-salvar" onclick="salvarPlano()">💾 Salvar Plano Terapêutico</button>
+        <button class="btn-salvar" onclick="salvarPlano()">🐙 Salvar Plano de Carinho</button>
     </div>
 
     <div id="confirmModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="icon">✅✨</div>
+                <div class="icon">✅🐙</div>
                 <h3>Plano Criado com Sucesso!</h3>
-                <p>O plano terapêutico foi registrado</p>
+                <p>O plano de carinho foi registrado</p>
             </div>
             <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
-    <div id="loader" class="loader">
-        <div class="spinner"></div>
-    </div>
-
+    <div id="loader" class="loader"><div class="spinner"></div></div>
     <div id="toast" class="toast"></div>
 
     <script>
-        // Variáveis globais
-        let pacienteId = null;
-        let pacienteNome = null;
-        let profissional = null;
-        
-        let medicamentos = [];
-        let exercicios = [];
-        let cuidados = [];
-        
+        let pacienteId = null, pacienteNome = null, profissional = null;
+        let medicamentos = [], exercicios = [], cuidados = [];
         let nextId = 1;
-        
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = `toast ${type} show`;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-        
         function setLoader(show) {
             const loader = document.getElementById('loader');
             if (show) loader.classList.add('show');
             else loader.classList.remove('show');
         }
-        
-        // FUNÇÃO CORRIGIDA - usa o novo sistema de autenticação
         function carregarProfissional() {
             const stored = localStorage.getItem('simbio_usuario');
             if (!stored) {
                 showToast('Faça login para continuar', 'error');
-                setTimeout(() => {
-                    window.location.href = '/login.html';
-                }, 1500);
+                setTimeout(() => window.location.href = '/login.html', 1500);
                 return null;
             }
             const usuario = JSON.parse(stored);
             if (usuario.tipo_usuario !== 'profissional') {
                 showToast('Acesso apenas para profissionais', 'error');
-                setTimeout(() => {
-                    window.location.href = '/login.html';
-                }, 1500);
+                setTimeout(() => window.location.href = '/login.html', 1500);
                 return null;
             }
             profissional = usuario;
             return profissional;
         }
-        
         function carregarPacienteDaURL() {
             const params = new URLSearchParams(window.location.search);
             pacienteId = params.get('paciente');
             pacienteNome = params.get('nome');
-            
             if (!pacienteId) {
                 const stored = localStorage.getItem('simbio_paciente_selecionado');
-                if (stored) {
-                    const p = JSON.parse(stored);
-                    pacienteId = p.id;
-                    pacienteNome = p.nome;
-                }
+                if (stored) { const p = JSON.parse(stored); pacienteId = p.id; pacienteNome = p.nome; }
             }
-            
             if (pacienteId && pacienteNome) {
                 document.getElementById('pacienteInfo').innerHTML = `👶 Paciente: ${pacienteNome} (ID: ${pacienteId})`;
             } else {
                 document.getElementById('pacienteInfo').innerHTML = '⚠️ Nenhum paciente selecionado';
             }
         }
-        
-        function adicionarMedicamento() {
-            const id = nextId++;
-            medicamentos.push({
-                id,
-                nome: '',
-                dosagem: '',
-                horarios: '',
-                duracao_dias: '',
-                instrucoes: ''
-            });
-            renderizarMedicamentos();
-        }
-        
-        function adicionarExercicio() {
-            const id = nextId++;
-            exercicios.push({
-                id,
-                nome: '',
-                frequencia: '',
-                duracao: '',
-                repeticoes: '',
-                instrucoes: ''
-            });
-            renderizarExercicios();
-        }
-        
-        function adicionarCuidado() {
-            const id = nextId++;
-            cuidados.push({
-                id,
-                nome: '',
-                descricao: '',
-                frequencia: '',
-                horarios: ''
-            });
-            renderizarCuidados();
-        }
-        
-        function removerMedicamento(id) {
-            medicamentos = medicamentos.filter(m => m.id !== id);
-            renderizarMedicamentos();
-        }
-        
-        function removerExercicio(id) {
-            exercicios = exercicios.filter(e => e.id !== id);
-            renderizarExercicios();
-        }
-        
-        function removerCuidado(id) {
-            cuidados = cuidados.filter(c => c.id !== id);
-            renderizarCuidados();
-        }
-        
-        function atualizarMedicamento(id, campo, valor) {
-            const med = medicamentos.find(m => m.id === id);
-            if (med) med[campo] = valor;
-        }
-        
-        function atualizarExercicio(id, campo, valor) {
-            const exe = exercicios.find(e => e.id === id);
-            if (exe) exe[campo] = valor;
-        }
-        
-        function atualizarCuidado(id, campo, valor) {
-            const cuid = cuidados.find(c => c.id === id);
-            if (cuid) cuid[campo] = valor;
-        }
-        
+        function adicionarMedicamento() { medicamentos.push({ id: nextId++, nome: '', dosagem: '', horarios: '', duracao_dias: '', instrucoes: '' }); renderizarMedicamentos(); }
+        function adicionarExercicio() { exercicios.push({ id: nextId++, nome: '', frequencia: '', duracao: '', repeticoes: '', instrucoes: '' }); renderizarExercicios(); }
+        function adicionarCuidado() { cuidados.push({ id: nextId++, nome: '', descricao: '', frequencia: '', horarios: '' }); renderizarCuidados(); }
+        function removerMedicamento(id) { medicamentos = medicamentos.filter(m => m.id !== id); renderizarMedicamentos(); }
+        function removerExercicio(id) { exercicios = exercicios.filter(e => e.id !== id); renderizarExercicios(); }
+        function removerCuidado(id) { cuidados = cuidados.filter(c => c.id !== id); renderizarCuidados(); }
+        function atualizarMedicamento(id, campo, valor) { const med = medicamentos.find(m => m.id === id); if (med) med[campo] = valor; }
+        function atualizarExercicio(id, campo, valor) { const exe = exercicios.find(e => e.id === id); if (exe) exe[campo] = valor; }
+        function atualizarCuidado(id, campo, valor) { const cuid = cuidados.find(c => c.id === id); if (cuid) cuid[campo] = valor; }
         function renderizarMedicamentos() {
             const container = document.getElementById('medicamentosList');
             if (!container) return;
-            if (medicamentos.length === 0) {
-                container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum medicamento adicionado. Clique em "+" para adicionar.</p>';
-                return;
-            }
+            if (medicamentos.length === 0) { container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum medicamento adicionado. Clique em "+" para adicionar.</p>'; return; }
             container.innerHTML = medicamentos.map(med => `
                 <div class="item-card">
-                    <div class="item-header">
-                        <h3>💊 Medicamento</h3>
-                        <button class="btn-remover" onclick="removerMedicamento(${med.id})">Remover</button>
-                    </div>
-                    <div class="form-group">
-                        <label>Nome do medicamento *</label>
-                        <input type="text" value="${(med.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Amoxicilina" onchange="atualizarMedicamento(${med.id}, 'nome', this.value)">
+                    <div class="item-header"><h3>💊 Medicamento</h3><button class="btn-remover" onclick="removerMedicamento(${med.id})">Remover</button></div>
+                    <div class="form-group"><label>Nome do medicamento *</label><input type="text" value="${(med.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Amoxicilina" onchange="atualizarMedicamento(${med.id}, 'nome', this.value)"></div>
+                    <div class="row">
+                        <div class="form-group"><label>Dosagem *</label><input type="text" value="${(med.dosagem || '').replace(/"/g, '&quot;')}" placeholder="Ex: 500mg" onchange="atualizarMedicamento(${med.id}, 'dosagem', this.value)"></div>
+                        <div class="form-group"><label>Horários *</label><input type="text" value="${(med.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: 08:00, 14:00, 20:00" onchange="atualizarMedicamento(${med.id}, 'horarios', this.value)"></div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Dosagem *</label>
-                            <input type="text" value="${(med.dosagem || '').replace(/"/g, '&quot;')}" placeholder="Ex: 500mg" onchange="atualizarMedicamento(${med.id}, 'dosagem', this.value)">
-                        </div>
-                        <div class="form-group">
-                            <label>Horários *</label>
-                            <input type="text" value="${(med.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: 08:00, 14:00, 20:00" onchange="atualizarMedicamento(${med.id}, 'horarios', this.value)">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Duração (dias)</label>
-                            <input type="number" value="${med.duracao_dias || ''}" placeholder="Ex: 7" onchange="atualizarMedicamento(${med.id}, 'duracao_dias', this.value)">
-                        </div>
-                        <div class="form-group">
-                            <label>Instruções</label>
-                            <input type="text" value="${(med.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Tomar após as refeições" onchange="atualizarMedicamento(${med.id}, 'instrucoes', this.value)">
-                        </div>
+                        <div class="form-group"><label>Duração (dias)</label><input type="number" value="${med.duracao_dias || ''}" placeholder="Ex: 7" onchange="atualizarMedicamento(${med.id}, 'duracao_dias', this.value)"></div>
+                        <div class="form-group"><label>Instruções</label><input type="text" value="${(med.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Tomar após as refeições" onchange="atualizarMedicamento(${med.id}, 'instrucoes', this.value)"></div>
                     </div>
                 </div>
             `).join('');
         }
-        
         function renderizarExercicios() {
             const container = document.getElementById('exerciciosList');
             if (!container) return;
-            if (exercicios.length === 0) {
-                container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum exercício adicionado. Clique em "+" para adicionar.</p>';
-                return;
-            }
+            if (exercicios.length === 0) { container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum exercício adicionado. Clique em "+" para adicionar.</p>'; return; }
             container.innerHTML = exercicios.map(exe => `
                 <div class="item-card">
-                    <div class="item-header">
-                        <h3>🏃 Exercício</h3>
-                        <button class="btn-remover" onclick="removerExercicio(${exe.id})">Remover</button>
-                    </div>
-                    <div class="form-group">
-                        <label>Nome do exercício *</label>
-                        <input type="text" value="${(exe.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Alongamento de braços" onchange="atualizarExercicio(${exe.id}, 'nome', this.value)">
+                    <div class="item-header"><h3>🏃 Exercício</h3><button class="btn-remover" onclick="removerExercicio(${exe.id})">Remover</button></div>
+                    <div class="form-group"><label>Nome do exercício *</label><input type="text" value="${(exe.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Alongamento de braços" onchange="atualizarExercicio(${exe.id}, 'nome', this.value)"></div>
+                    <div class="row">
+                        <div class="form-group"><label>Frequência *</label><input type="text" value="${(exe.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: 2x ao dia" onchange="atualizarExercicio(${exe.id}, 'frequencia', this.value)"></div>
+                        <div class="form-group"><label>Duração *</label><input type="text" value="${(exe.duracao || '').replace(/"/g, '&quot;')}" placeholder="Ex: 10 minutos" onchange="atualizarExercicio(${exe.id}, 'duracao', this.value)"></div>
                     </div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Frequência *</label>
-                            <input type="text" value="${(exe.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: 2x ao dia" onchange="atualizarExercicio(${exe.id}, 'frequencia', this.value)">
-                        </div>
-                        <div class="form-group">
-                            <label>Duração *</label>
-                            <input type="text" value="${(exe.duracao || '').replace(/"/g, '&quot;')}" placeholder="Ex: 10 minutos" onchange="atualizarExercicio(${exe.id}, 'duracao', this.value)">
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="form-group">
-                            <label>Repetições</label>
-                            <input type="number" value="${exe.repeticoes || ''}" placeholder="Ex: 10" onchange="atualizarExercicio(${exe.id}, 'repeticoes', this.value)">
-                        </div>
-                        <div class="form-group">
-                            <label>Instruções</label>
-                            <input type="text" value="${(exe.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Fazer com calma" onchange="atualizarExercicio(${exe.id}, 'instrucoes', this.value)">
-                        </div>
+                        <div class="form-group"><label>Repetições</label><input type="number" value="${exe.repeticoes || ''}" placeholder="Ex: 10" onchange="atualizarExercicio(${exe.id}, 'repeticoes', this.value)"></div>
+                        <div class="form-group"><label>Instruções</label><input type="text" value="${(exe.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Fazer com calma" onchange="atualizarExercicio(${exe.id}, 'instrucoes', this.value)"></div>
                     </div>
                 </div>
             `).join('');
         }
-        
         function renderizarCuidados() {
             const container = document.getElementById('cuidadosList');
             if (!container) return;
-            if (cuidados.length === 0) {
-                container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum cuidado adicionado. Clique em "+" para adicionar.</p>';
-                return;
-            }
+            if (cuidados.length === 0) { container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum cuidado adicionado. Clique em "+" para adicionar.</p>'; return; }
             container.innerHTML = cuidados.map(cuid => `
                 <div class="item-card">
-                    <div class="item-header">
-                        <h3>🩺 Cuidado</h3>
-                        <button class="btn-remover" onclick="removerCuidado(${cuid.id})">Remover</button>
-                    </div>
-                    <div class="form-group">
-                        <label>Nome do cuidado *</label>
-                        <input type="text" value="${(cuid.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Cuidado com o curativo" onchange="atualizarCuidado(${cuid.id}, 'nome', this.value)">
-                    </div>
-                    <div class="form-group">
-                        <label>Descrição *</label>
-                        <textarea rows="2" placeholder="Descreva o cuidado..." onchange="atualizarCuidado(${cuid.id}, 'descricao', this.value)">${cuid.descricao || ''}</textarea>
-                    </div>
+                    <div class="item-header"><h3>🩺 Cuidado</h3><button class="btn-remover" onclick="removerCuidado(${cuid.id})">Remover</button></div>
+                    <div class="form-group"><label>Nome do cuidado *</label><input type="text" value="${(cuid.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Cuidado com o curativo" onchange="atualizarCuidado(${cuid.id}, 'nome', this.value)"></div>
+                    <div class="form-group"><label>Descrição *</label><textarea rows="2" placeholder="Descreva o cuidado..." onchange="atualizarCuidado(${cuid.id}, 'descricao', this.value)">${cuid.descricao || ''}</textarea></div>
                     <div class="row">
-                        <div class="form-group">
-                            <label>Frequência *</label>
-                            <input type="text" value="${(cuid.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: Diário" onchange="atualizarCuidado(${cuid.id}, 'frequencia', this.value)">
-                        </div>
-                        <div class="form-group">
-                            <label>Horários</label>
-                            <input type="text" value="${(cuid.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: Manhã e noite" onchange="atualizarCuidado(${cuid.id}, 'horarios', this.value)">
-                        </div>
+                        <div class="form-group"><label>Frequência *</label><input type="text" value="${(cuid.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: Diário" onchange="atualizarCuidado(${cuid.id}, 'frequencia', this.value)"></div>
+                        <div class="form-group"><label>Horários</label><input type="text" value="${(cuid.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: Manhã e noite" onchange="atualizarCuidado(${cuid.id}, 'horarios', this.value)"></div>
                     </div>
                 </div>
             `).join('');
         }
-        
         function validarPlano() {
             const medicamentosValidos = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
             const exerciciosValidos = exercicios.filter(e => e.nome && e.nome.trim() !== '');
             const cuidadosValidos = cuidados.filter(c => c.nome && c.nome.trim() !== '');
-            
             if (medicamentosValidos.length === 0 && exerciciosValidos.length === 0 && cuidadosValidos.length === 0) {
                 showToast('Adicione pelo menos um medicamento, exercício ou cuidado', 'error');
                 return false;
             }
             return true;
         }
-        
         function mostrarConfirmacao() {
             const modal = document.getElementById('confirmModal');
             const modalBody = document.getElementById('modalBody');
-            
             const medicamentosValidos = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
             const exerciciosValidos = exercicios.filter(e => e.nome && e.nome.trim() !== '');
             const cuidadosValidos = cuidados.filter(c => c.nome && c.nome.trim() !== '');
-            
             let html = `
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <p style="color: #4caf50; font-size: 18px; font-weight: bold;">✨ Plano salvo com sucesso! ✨</p>
-                    <p style="color: #666;">O plano terapêutico foi registrado e já está disponível para o cuidador.</p>
+                    <p style="color: #B8E1B0; font-size: 18px; font-weight: bold;">✨ Plano salvo com sucesso! ✨</p>
+                    <p style="color: #666;">O plano de carinho foi registrado e já está disponível para o cuidador.</p>
                 </div>
-                
                 <div class="resumo-item">
                     <h4>📋 Resumo do Plano</h4>
                     <p><strong>Paciente:</strong> ${pacienteNome}</p>
                     <p><strong>Profissional:</strong> ${profissional.nome}</p>
                     <p><strong>Data de criação:</strong> ${new Date().toLocaleString()}</p>
                 </div>
-                
                 <div class="resumo-item">
                     <h4>💊 Medicamentos (${medicamentosValidos.length})</h4>
             `;
-            
             if (medicamentosValidos.length > 0) {
-                medicamentosValidos.forEach(med => {
-                    html += `
-                        <div style="margin-bottom: 12px;">
-                            <span class="badge">${med.nome}</span>
-                            <span style="font-size: 13px; color: #666;">${med.dosagem} - ${med.horarios}</span>
-                        </div>
-                    `;
-                });
-            } else {
-                html += `<p style="color: #888;">Nenhum medicamento registrado</p>`;
-            }
-            
+                medicamentosValidos.forEach(med => { html += `<div style="margin-bottom: 12px;"><span class="badge">${med.nome}</span><span style="font-size: 13px; color: #666;">${med.dosagem} - ${med.horarios}</span></div>`; });
+            } else { html += `<p style="color: #888;">Nenhum medicamento registrado</p>`; }
             html += `</div><div class="resumo-item"><h4>🏃 Exercícios (${exerciciosValidos.length})</h4>`;
-            
             if (exerciciosValidos.length > 0) {
-                exerciciosValidos.forEach(exe => {
-                    html += `
-                        <div style="margin-bottom: 12px;">
-                            <span class="badge">${exe.nome}</span>
-                            <span style="font-size: 13px; color: #666;">${exe.frequencia} - ${exe.duracao}</span>
-                        </div>
-                    `;
-                });
-            } else {
-                html += `<p style="color: #888;">Nenhum exercício registrado</p>`;
-            }
-            
+                exerciciosValidos.forEach(exe => { html += `<div style="margin-bottom: 12px;"><span class="badge">${exe.nome}</span><span style="font-size: 13px; color: #666;">${exe.frequencia} - ${exe.duracao}</span></div>`; });
+            } else { html += `<p style="color: #888;">Nenhum exercício registrado</p>`; }
             html += `</div><div class="resumo-item"><h4>🩺 Cuidados (${cuidadosValidos.length})</h4>`;
-            
             if (cuidadosValidos.length > 0) {
-                cuidadosValidos.forEach(cuid => {
-                    html += `
-                        <div style="margin-bottom: 12px;">
-                            <span class="badge">${cuid.nome}</span>
-                            <span style="font-size: 13px; color: #666;">${cuid.frequencia}</span>
-                        </div>
-                    `;
-                });
-            } else {
-                html += `<p style="color: #888;">Nenhum cuidado registrado</p>`;
-            }
-            
-            html += `
-                </div>
-                <button class="btn-fechar" onclick="fecharModalEVoltar()">✅ Ver lista de pacientes</button>
-            `;
-            
+                cuidadosValidos.forEach(cuid => { html += `<div style="margin-bottom: 12px;"><span class="badge">${cuid.nome}</span><span style="font-size: 13px; color: #666;">${cuid.frequencia}</span></div>`; });
+            } else { html += `<p style="color: #888;">Nenhum cuidado registrado</p>`; }
+            html += `</div><button class="btn-fechar" onclick="fecharModalEVoltar()">✅ Ver lista de pacientes</button>`;
             modalBody.innerHTML = html;
             modal.classList.add('show');
         }
-        
         function fecharModalEVoltar() {
             const modal = document.getElementById('confirmModal');
             modal.classList.remove('show');
             window.location.href = '/lista-pacientes.html';
         }
-        
         async function salvarPlano() {
-            if (!pacienteId) {
-                showToast('Nenhum paciente selecionado', 'error');
-                return;
-            }
-            
-            if (!validarPlano()) {
-                return;
-            }
-            
+            if (!pacienteId) { showToast('Nenhum paciente selecionado', 'error'); return; }
+            if (!validarPlano()) return;
             const observacoes = document.getElementById('observacoes').value;
             const dataFim = document.getElementById('dataFim').value;
-            
             const medicamentosFiltrados = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
             const exerciciosFiltrados = exercicios.filter(e => e.nome && e.nome.trim() !== '');
             const cuidadosFiltrados = cuidados.filter(c => c.nome && c.nome.trim() !== '');
-            
             const payload = {
                 paciente_id: parseInt(pacienteId),
                 profissional_id: profissional.id,
@@ -696,9 +483,7 @@
                 observacoes: observacoes,
                 data_fim: dataFim || null
             };
-            
             setLoader(true);
-            
             try {
                 const response = await fetch('/api/planos', {
                     method: 'POST',
@@ -706,56 +491,26 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
-                
                 if (!response.ok) throw new Error(data.error || 'Erro ao salvar plano');
-                
                 mostrarConfirmacao();
-                
             } catch (err) {
                 showToast(err.message, 'error');
             } finally {
                 setLoader(false);
             }
         }
-        
-        function voltar() {
-            window.location.href = '/lista-pacientes.html';
-        }
-        
-        // Inicialização
+        function voltar() { window.location.href = '/lista-pacientes.html'; }
         function init() {
             if (!carregarProfissional()) return;
             carregarPacienteDaURL();
-            
-            // Adicionar exemplos
-            medicamentos.push({
-                id: nextId++,
-                nome: 'Amoxicilina',
-                dosagem: '500mg',
-                horarios: '08:00, 20:00',
-                duracao_dias: '7',
-                instrucoes: 'Tomar após as refeições'
-            });
-            exercicios.push({
-                id: nextId++,
-                nome: 'Respiração Diafragmática',
-                frequencia: '3x ao dia',
-                duracao: '5 minutos',
-                repeticoes: '10',
-                instrucoes: 'Inspirar pelo nariz, expirar pela boca'
-            });
-            cuidados.push({
-                id: nextId++,
-                nome: 'Hidratação da pele',
-                descricao: 'Aplicar creme hidratante na região operada',
-                frequencia: '2x ao dia',
-                horarios: 'Manhã e noite'
-            });
+            // Exemplos
+            medicamentos.push({ id: nextId++, nome: 'Amoxicilina', dosagem: '500mg', horarios: '08:00, 20:00', duracao_dias: '7', instrucoes: 'Tomar após as refeições' });
+            exercicios.push({ id: nextId++, nome: 'Respiração Diafragmática', frequencia: '3x ao dia', duracao: '5 minutos', repeticoes: '10', instrucoes: 'Inspirar pelo nariz, expirar pela boca' });
+            cuidados.push({ id: nextId++, nome: 'Hidratação da pele', descricao: 'Aplicar creme hidratante na região operada', frequencia: '2x ao dia', horarios: 'Manhã e noite' });
             renderizarMedicamentos();
             renderizarExercicios();
             renderizarCuidados();
         }
-        
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>

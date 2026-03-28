@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simbio - Cadastro de Cuidador</title>
+    <title>Simbio - Cadastro do cuidador</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #C5B9F2 0%, #8ECAE6 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -19,7 +19,7 @@
             max-width: 500px;
             width: 100%;
             background: white;
-            border-radius: 32px;
+            border-radius: 48px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.2);
             overflow: hidden;
             animation: fadeInUp 0.5s ease-out;
@@ -29,12 +29,28 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .header {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: #FFB347;
             padding: 30px 24px;
             text-align: center;
+            border-radius: 48px 48px 0 0;
         }
-        .logo { font-size: 48px; margin-bottom: 12px; }
-        .header h1 { color: white; font-size: 24px; margin-bottom: 8px; }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 12px;
+        }
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 32px;
+            color: white;
+            text-shadow: 2px 2px 0 #8ECAE6;
+            margin-bottom: 8px;
+        }
         .header p { color: rgba(255,255,255,0.9); font-size: 14px; }
         .form-content { padding: 32px 24px; }
         .form-group { margin-bottom: 20px; }
@@ -43,41 +59,43 @@
             width: 100%;
             padding: 14px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 16px;
+            border-radius: 30px;
             font-size: 16px;
             transition: all 0.3s ease;
+            font-family: 'Quicksand', sans-serif;
         }
         .form-group input:focus, .form-group select:focus {
             outline: none;
-            border-color: #4facfe;
-            box-shadow: 0 0 0 3px rgba(79,172,254,0.1);
+            border-color: #FFB347;
+            box-shadow: 0 0 0 3px rgba(255,179,71,0.2);
         }
         .btn-cadastrar {
             width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 16px;
-            border-radius: 40px;
-            font-size: 18px;
+            border-radius: 60px;
+            font-size: 20px;
             font-weight: bold;
+            font-family: 'Poppins', sans-serif;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 8px;
         }
-        .btn-cadastrar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
-        .error-message { color: #ff6b6b; font-size: 12px; margin-top: 6px; display: none; }
+        .btn-cadastrar:hover {
+            transform: scale(1.02);
+            background: #A0D090;
+        }
+        .error-message { color: #FF6B6B; font-size: 12px; margin-top: 6px; display: none; }
         .error-message.show { display: block; }
-        .input-error { border-color: #ff6b6b !important; }
+        .input-error { border-color: #FF6B6B !important; }
         .link {
             text-align: center;
             margin-top: 20px;
             font-size: 14px;
         }
-        .link a {
-            color: #4facfe;
-            text-decoration: none;
-        }
+        .link a { color: #FFB347; text-decoration: none; font-weight: bold; }
         .toast {
             position: fixed;
             bottom: 30px;
@@ -92,23 +110,26 @@
             transition: all 0.3s ease;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast.success { background: #4caf50; }
-        .toast.error { background: #ff6b6b; }
+        .toast.success { background: #B8E1B0; color: #2C5E2E; }
+        .toast.error { background: #FFB3BA; color: #C62828; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500;600&display=swap');
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="logo">👨‍👩‍👧✨</div>
+            <div class="logo">
+                <img src="octopus-icon.svg" alt="Simbio - Polvo amigo">
+            </div>
             <h1>Cadastro de Cuidador</h1>
-            <p>Crie sua conta para acompanhar seu pequeno</p>
+            <p>Vamos criar sua conta para ajudar seu pequeno(a) a brilhar!</p>
         </div>
 
         <div class="form-content">
             <form id="cadastroForm">
                 <div class="form-group">
                     <label>Seu nome completo *</label>
-                    <input type="text" id="nome" placeholder="Ex: Maria da Silva">
+                    <input type="text" id="nome" placeholder="Seu nome, para te chamarmos carinhosamente">
                     <div class="error-message" id="errorNome">Por favor, informe seu nome</div>
                 </div>
                 
@@ -144,10 +165,10 @@
                     <div class="error-message" id="errorPaciente">Por favor, selecione um paciente</div>
                 </div>
                 
-                <button type="submit" class="btn-cadastrar">📝 Cadastrar</button>
+                <button type="submit" class="btn-cadastrar">🐙 Cadastrar e começar</button>
                 
                 <div class="link">
-                    Já tem uma conta? <a href="/login.html">Faça login</a>
+                    Já tem uma conta? <a href="/login.html">Faça login no Simbio</a>
                 </div>
             </form>
         </div>
@@ -176,7 +197,6 @@
             }
         });
         
-        // Carregar lista de pacientes
         async function carregarPacientes() {
             try {
                 const response = await fetch('/api/pacientes');
@@ -188,12 +208,12 @@
                 });
             } catch (err) {
                 console.error('Erro ao carregar pacientes:', err);
+                showToast('Não foi possível carregar a lista de pacientes', 'error');
             }
         }
         
         function validarFormulario() {
             let isValid = true;
-            
             const nome = document.getElementById('nome').value.trim();
             const email = document.getElementById('email').value.trim();
             const senha = document.getElementById('senha').value;
@@ -201,7 +221,6 @@
             const telefone = document.getElementById('telefone').value;
             const pacienteId = document.getElementById('pacienteId').value;
             
-            // Limpar erros
             document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
             document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
             
@@ -210,46 +229,39 @@
                 document.getElementById('nome').classList.add('input-error');
                 isValid = false;
             }
-            
             if (!email || !email.includes('@')) {
                 document.getElementById('errorEmail').classList.add('show');
                 document.getElementById('email').classList.add('input-error');
                 isValid = false;
             }
-            
             if (!senha || senha.length < 6) {
                 document.getElementById('errorSenha').classList.add('show');
                 document.getElementById('senha').classList.add('input-error');
                 isValid = false;
             }
-            
             if (senha !== confirmar) {
                 document.getElementById('errorConfirmar').classList.add('show');
                 document.getElementById('confirmarSenha').classList.add('input-error');
                 isValid = false;
             }
-            
             const telefoneLimpo = telefone.replace(/\D/g, '');
             if (!telefoneLimpo || telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
                 document.getElementById('errorTelefone').classList.add('show');
                 document.getElementById('telefone').classList.add('input-error');
                 isValid = false;
             }
-            
             if (!pacienteId) {
                 document.getElementById('errorPaciente').classList.add('show');
                 document.getElementById('pacienteId').classList.add('input-error');
                 isValid = false;
             }
-            
             return isValid;
         }
         
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             if (!validarFormulario()) {
-                showToast('Preencha todos os campos corretamente.', 'error');
+                showToast('🐙 Ops! Preencha todos os campos com a ajuda de um adulto.', 'error');
                 return;
             }
             
@@ -268,11 +280,9 @@
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
-                
                 if (!response.ok) throw new Error(data.error || 'Erro no cadastro');
                 
-                showToast(`✅ ${payload.nome}, seu cadastro foi realizado com sucesso!`, 'success');
-                
+                showToast(`🎉 Que legal, ${payload.nome}! Seu cadastro foi realizado com sucesso! Agora você pode ver o progresso do seu pequeno(a).`, 'success');
                 setTimeout(() => {
                     window.location.href = '/login.html';
                 }, 2000);
@@ -281,7 +291,6 @@
             }
         });
         
-        // Inicialização
         carregarPacientes();
     </script>
 </body>

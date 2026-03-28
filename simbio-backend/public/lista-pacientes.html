@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simbio - Lista de Pacientes</title>
+    <title>Simbio - Meus Pacientes</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
+            font-family: 'Quicksand', sans-serif;
+            background: #F9F5E8;
             min-height: 100vh;
             padding: 20px;
         }
@@ -17,8 +17,8 @@
             margin: 0 auto;
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 24px;
+            background: linear-gradient(135deg, #8ECAE6 0%, #C5B9F2 100%);
+            border-radius: 48px;
             padding: 24px 32px;
             margin-bottom: 24px;
             color: white;
@@ -28,7 +28,17 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-        .header h1 { font-size: 24px; }
+        .header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .header h1 img {
+            width: 40px;
+            height: 40px;
+        }
         .profissional-info {
             background: rgba(255,255,255,0.2);
             padding: 8px 16px;
@@ -46,27 +56,25 @@
             transition: all 0.3s;
         }
         .btn-sair:hover { background: rgba(255,255,255,0.3); }
-        
         .search-box {
             background: white;
-            border-radius: 16px;
+            border-radius: 48px;
             padding: 16px;
             margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .search-box input {
             width: 100%;
             padding: 14px 16px;
             border: 2px solid #e0e0e0;
-            border-radius: 40px;
+            border-radius: 60px;
             font-size: 16px;
-            transition: all 0.3s;
+            font-family: 'Quicksand', sans-serif;
         }
         .search-box input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #FFB347;
         }
-        
         .pacientes-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -74,19 +82,19 @@
         }
         .paciente-card {
             background: white;
-            border-radius: 20px;
+            border-radius: 48px;
             padding: 20px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.08);
             transition: transform 0.2s, box-shadow 0.2s;
         }
         .paciente-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.12);
         }
         .paciente-avatar {
             width: 60px;
             height: 60px;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #FFB347 0%, #FFD966 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -96,21 +104,12 @@
             color: white;
             margin-bottom: 16px;
         }
-        .paciente-nome {
-            font-size: 20px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        .paciente-info {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
+        .paciente-nome { font-size: 20px; font-weight: bold; color: #8ECAE6; margin-bottom: 8px; }
+        .paciente-info { color: #666; font-size: 14px; margin-bottom: 4px; }
         .btn-plano {
             margin-top: 16px;
-            background: #667eea;
-            color: white;
+            background: #B8E1B0;
+            color: #4A6A3B;
             border: none;
             padding: 10px 16px;
             border-radius: 40px;
@@ -118,17 +117,16 @@
             font-size: 14px;
             width: 100%;
             transition: all 0.3s;
+            font-weight: bold;
         }
-        .btn-plano:hover { background: #5a67d8; transform: scale(1.02); }
-        
+        .btn-plano:hover { background: #A0D090; transform: scale(1.02); }
         .empty-state {
             text-align: center;
             padding: 60px;
             background: white;
-            border-radius: 24px;
+            border-radius: 48px;
             color: #888;
         }
-        
         .toast {
             position: fixed;
             bottom: 30px;
@@ -143,9 +141,8 @@
             transition: all 0.3s ease;
         }
         .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast.success { background: #4caf50; }
-        .toast.error { background: #ff6b6b; }
-        
+        .toast.success { background: #B8E1B0; color: #2C5E2E; }
+        .toast.error { background: #FFB3BA; color: #C62828; }
         .loader {
             display: none;
             position: fixed;
@@ -158,41 +155,35 @@
             justify-content: center;
             align-items: center;
         }
-        .loader.show {
-            display: flex;
-        }
+        .loader.show { display: flex; }
         .spinner {
             width: 50px;
             height: 50px;
             border: 5px solid #fff;
-            border-top-color: #667eea;
+            border-top-color: #FFB347;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         .status-badge {
             display: inline-block;
             padding: 4px 8px;
-            border-radius: 12px;
+            border-radius: 20px;
             font-size: 11px;
             margin-top: 8px;
         }
-        .status-plano {
-            background: #e8f5e9;
-            color: #4caf50;
-        }
-        .status-sem-plano {
-            background: #fff3e0;
-            color: #ff9800;
-        }
+        .status-sem-plano { background: #FFF8E7; color: #FFB347; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@400;500;600&display=swap');
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div>
-                <h1>👩‍⚕️ Meus Pacientes</h1>
+                <h1>
+                    <img src="octopus-icon.svg" alt="Simbio">
+                    Meus Pacientes
+                </h1>
             </div>
             <div style="display: flex; gap: 12px; align-items: center;">
                 <span class="profissional-info" id="profissionalNome">Carregando...</span>
@@ -209,82 +200,54 @@
         </div>
     </div>
     
-    <div id="loader" class="loader">
-        <div class="spinner"></div>
-    </div>
-    
+    <div id="loader" class="loader"><div class="spinner"></div></div>
     <div id="toast" class="toast"></div>
 
     <script>
-        let pacientes = [];
-        let profissional = null;
-        
+        let pacientes = [], profissional = null;
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             toast.textContent = message;
             toast.className = `toast ${type} show`;
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
-        
         function setLoader(show) {
             const loader = document.getElementById('loader');
             if (show) loader.classList.add('show');
             else loader.classList.remove('show');
         }
-        
-        // Carregar usuário logado
         function carregarUsuario() {
             const stored = localStorage.getItem('simbio_usuario');
-            console.log('Usuário armazenado:', stored);
-            
             if (!stored) {
                 showToast('Faça login para continuar', 'error');
-                setTimeout(() => {
-                    window.location.href = '/login.html';
-                }, 1500);
+                setTimeout(() => window.location.href = '/login.html', 1500);
                 return null;
             }
-            
             const usuario = JSON.parse(stored);
-            console.log('Usuário logado:', usuario);
-            
             if (usuario.tipo_usuario !== 'profissional') {
                 showToast('Acesso apenas para profissionais de saúde', 'error');
-                setTimeout(() => {
-                    window.location.href = '/dashboard-cuidador.html';
-                }, 1500);
+                setTimeout(() => window.location.href = '/dashboard-cuidador.html', 1500);
                 return null;
             }
-            
             profissional = usuario;
             document.getElementById('profissionalNome').textContent = `${profissional.nome} (${profissional.registro})`;
             return profissional;
         }
-        
-        // Carregar lista de pacientes
         async function carregarPacientes() {
             setLoader(true);
             try {
-                console.log('Buscando pacientes...');
                 const response = await fetch('/api/pacientes');
-                
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
-                }
-                
+                if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                 pacientes = await response.json();
-                console.log('Pacientes carregados:', pacientes);
                 renderizarPacientes();
             } catch (err) {
-                console.error('Erro ao carregar pacientes:', err);
+                console.error('Erro:', err);
                 showToast('Erro ao carregar pacientes', 'error');
                 document.getElementById('pacientesGrid').innerHTML = '<div class="empty-state">❌ Erro ao carregar pacientes. Verifique se o servidor está rodando.</div>';
             } finally {
                 setLoader(false);
             }
         }
-        
-        // Formatar condição clínica
         function formatarCondicao(condicao) {
             const condicoes = {
                 'pos-operatorio': 'Pós-operatório',
@@ -294,18 +257,14 @@
             };
             return condicoes[condicao] || condicao;
         }
-        
-        // Renderizar lista de pacientes
         function renderizarPacientes() {
             const grid = document.getElementById('pacientesGrid');
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             const filtrados = pacientes.filter(p => p.nome.toLowerCase().includes(searchTerm));
-            
             if (filtrados.length === 0) {
                 grid.innerHTML = '<div class="empty-state">👶 Nenhum paciente encontrado</div>';
                 return;
             }
-            
             grid.innerHTML = filtrados.map(p => `
                 <div class="paciente-card">
                     <div class="paciente-avatar">${p.nome.charAt(0).toUpperCase()}</div>
@@ -315,49 +274,23 @@
                     <div class="paciente-info">📞 ${p.telefone}</div>
                     <div class="paciente-info">🏥 ${formatarCondicao(p.condicao_clinica)}</div>
                     <div class="status-badge status-sem-plano">📋 Nenhum plano ativo</div>
-                    <button class="btn-plano" onclick="criarPlano(${p.id}, '${p.nome.replace(/'/g, "\\'")}')">
-                        📋 Criar Plano Terapêutico
-                    </button>
+                    <button class="btn-plano" onclick="criarPlano(${p.id}, '${p.nome.replace(/'/g, "\\'")}')">🐙 Criar Plano de Carinho</button>
                 </div>
             `).join('');
         }
-        
-        // Filtrar pacientes
-        function filtrarPacientes() {
-            renderizarPacientes();
-        }
-        
-        // Criar plano terapêutico
+        function filtrarPacientes() { renderizarPacientes(); }
         function criarPlano(pacienteId, pacienteNome) {
-            console.log(`Criando plano para: ${pacienteNome} (ID: ${pacienteId})`);
-            
-            localStorage.setItem('simbio_paciente_selecionado', JSON.stringify({ 
-                id: pacienteId, 
-                nome: pacienteNome 
-            }));
-            
-            const url = `/plano-terapeutico.html?paciente=${pacienteId}&nome=${encodeURIComponent(pacienteNome)}`;
-            console.log('Redirecionando para:', url);
-            window.location.href = url;
+            localStorage.setItem('simbio_paciente_selecionado', JSON.stringify({ id: pacienteId, nome: pacienteNome }));
+            window.location.href = `/plano-terapeutico.html?paciente=${pacienteId}&nome=${encodeURIComponent(pacienteNome)}`;
         }
-        
-        // Sair
         function sair() {
             localStorage.removeItem('simbio_usuario');
             localStorage.removeItem('simbio_profissional');
             localStorage.removeItem('simbio_paciente_selecionado');
             showToast('Saindo...', 'success');
-            setTimeout(() => {
-                window.location.href = '/login.html';
-            }, 500);
+            setTimeout(() => window.location.href = '/login.html', 500);
         }
-        
-        // Inicialização
-        console.log('Página carregada - iniciando...');
-        
-        if (carregarUsuario()) {
-            carregarPacientes();
-        }
+        if (carregarUsuario()) carregarPacientes();
     </script>
 </body>
 </html>
