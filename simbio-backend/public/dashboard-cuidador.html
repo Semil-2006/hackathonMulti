@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simbio - Dashboard do Cuidador</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header h1 { font-size: 24px; }
+        .btn-sair {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .simbionte {
+            text-align: center;
+            padding: 20px;
+        }
+        .simbionte-imagem {
+            font-size: 120px;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .simbionte-nome {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+        .simbionte-nivel {
+            background: #e0e7ff;
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 40px;
+            font-size: 14px;
+            color: #667eea;
+        }
+        .atividades-hoje {
+            margin-top: 24px;
+        }
+        .atividade-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 16px;
+            margin-bottom: 12px;
+        }
+        .atividade-info h4 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .atividade-info p {
+            font-size: 12px;
+            color: #888;
+        }
+        .btn-concluir {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-concluir:hover { background: #45a049; }
+        .btn-nao-concluir {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 8px;
+        }
+        .badge-concluido {
+            background: #e8f5e9;
+            color: #4caf50;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #ff6b6b; }
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🌱 Dashboard</h1>
+                <p id="pacienteInfo" style="margin-top: 8px; opacity: 0.9;"></p>
+            </div>
+            <button class="btn-sair" onclick="sair()">Sair</button>
+        </div>
+        
+        <div class="card">
+            <div class="simbionte">
+                <div class="simbionte-imagem" id="simbionteEmoji">🌱✨</div>
+                <div class="simbionte-nome" id="simbionteNome">Amiguinho</div>
+                <div class="simbionte-nivel" id="simbionteNivel">Nível 1</div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2 style="margin-bottom: 16px;">📋 Atividades de Hoje</h2>
+            <div id="atividadesList">
+                <div class="empty-state">Carregando atividades...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+    
+    <script>
+        let usuario = null;
+        let paciente = null;
+        
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        function carregarUsuario() {
+            const stored = localStorage.getItem('simbio_usuario');
+            if (!stored) {
+                window.location.href = '/login.html';
+                return null;
+            }
+            usuario = JSON.parse(stored);
+            
+            if (usuario.tipo_usuario !== 'cuidador') {
+                window.location.href = '/lista-pacientes.html';
+                return null;
+            }
+            
+            paciente = usuario.paciente;
+            if (paciente) {
+                document.getElementById('pacienteInfo').innerHTML = `👶 Paciente: ${paciente.nome} (${paciente.idade} anos)`;
+            }
+            
+            return usuario;
+        }
+        
+        function carregarPlanoAtivo() {
+            if (!paciente) return;
+            
+            // Simular atividades para demonstração
+            const atividades = [
+                { id: 1, tipo: 'medicamento', nome: 'Amoxicilina', descricao: '500mg - 08:00, 20:00', concluido: false },
+                { id: 2, tipo: 'exercicio', nome: 'Respiração Diafragmática', descricao: '3x ao dia - 5 minutos', concluido: false },
+                { id: 3, tipo: 'cuidado', nome: 'Hidratação da pele', descricao: '2x ao dia - Manhã e noite', concluido: false }
+            ];
+            
+            renderizarAtividades(atividades);
+        }
+        
+        function renderizarAtividades(atividades) {
+            const container = document.getElementById('atividadesList');
+            if (!atividades || atividades.length === 0) {
+                container.innerHTML = '<div class="empty-state">✨ Nenhuma atividade pendente para hoje!</div>';
+                return;
+            }
+            
+            container.innerHTML = atividades.map(atv => `
+                <div class="atividade-item" data-id="${atv.id}">
+                    <div class="atividade-info">
+                        <h4>${atv.nome}</h4>
+                        <p>${atv.descricao}</p>
+                    </div>
+                    <div>
+                        ${!atv.concluido ? `
+                            <button class="btn-concluir" onclick="concluirAtividade(${atv.id})">✅ Concluir</button>
+                            <button class="btn-nao-concluir" onclick="naoConcluirAtividade(${atv.id})">⏰ Não consegui</button>
+                        ` : `
+                            <span class="badge-concluido">✓ Concluído</span>
+                        `}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        window.concluirAtividade = function(id) {
+            showToast('✨ Atividade concluída! Seu amigo ficou mais feliz!', 'success');
+            
+            // Atualizar estado do simbionte
+            const simbionteEmoji = document.getElementById('simbionteEmoji');
+            const simbionteNome = document.getElementById('simbionteNome');
+            const simbionteNivel = document.getElementById('simbionteNivel');
+            
+            simbionteEmoji.innerHTML = '🌟✨🌱';
+            simbionteNome.innerHTML = 'Amiguinho Feliz';
+            simbionteNivel.innerHTML = 'Nível 2 (progresso: 20%)';
+            
+            setTimeout(() => {
+                simbionteEmoji.innerHTML = '🌱✨🌟';
+            }, 2000);
+        };
+        
+        window.naoConcluirAtividade = function(id) {
+            showToast('💚 Tudo bem! Vocês podem tentar juntos novamente amanhã.', 'success');
+        };
+        
+        function sair() {
+            localStorage.removeItem('simbio_usuario');
+            window.location.href = '/login.html';
+        }
+        
+        // Inicialização
+        if (carregarUsuario()) {
+            carregarPlanoAtivo();
+        }
+    </script>
+</body>
+</html>

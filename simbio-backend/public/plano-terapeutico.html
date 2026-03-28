@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simbio - Plano Terapêutico</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 24px;
+            padding: 24px 32px;
+            margin-bottom: 24px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header h1 { font-size: 24px; }
+        .btn-voltar {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .item-card {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid #667eea;
+        }
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .item-header h3 {
+            font-size: 16px;
+            color: #667eea;
+        }
+        .btn-remover {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .btn-add {
+            background: #e0e7ff;
+            color: #667eea;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .btn-salvar {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 16px;
+        }
+        .btn-salvar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        /* Modal de Confirmação */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .modal-header {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            padding: 24px;
+            text-align: center;
+            color: white;
+            border-radius: 32px 32px 0 0;
+        }
+        .modal-header .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .modal-header h3 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .modal-body {
+            padding: 24px;
+        }
+        .resumo-item {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border-left: 4px solid #4caf50;
+        }
+        .resumo-item h4 {
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .badge {
+            display: inline-block;
+            background: #e0e7ff;
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .btn-fechar {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        .btn-fechar:hover { background: #5a67d8; }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #ff6b6b; }
+        
+        @media (max-width: 600px) {
+            .row { grid-template-columns: 1fr; }
+        }
+        
+        .loader {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .loader.show {
+            display: flex;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #fff;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>📋 Plano Terapêutico</h1>
+                <p id="pacienteInfo" style="margin-top: 8px; opacity: 0.9;"></p>
+            </div>
+            <button class="btn-voltar" onclick="voltar()">← Voltar</button>
+        </div>
+
+        <div class="card">
+            <h2>📌 Informações Gerais</h2>
+            <div class="form-group">
+                <label>Observações do plano</label>
+                <textarea id="observacoes" rows="3" placeholder="Orientações gerais para o cuidador..."></textarea>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label>Data de término (opcional)</label>
+                    <input type="date" id="dataFim">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>💊 Medicamentos</h2>
+            <div id="medicamentosList"></div>
+            <button type="button" class="btn-add" onclick="window.adicionarMedicamento()">+ Adicionar Medicamento</button>
+        </div>
+
+        <div class="card">
+            <h2>🏃 Exercícios</h2>
+            <div id="exerciciosList"></div>
+            <button type="button" class="btn-add" onclick="window.adicionarExercicio()">+ Adicionar Exercício</button>
+        </div>
+
+        <div class="card">
+            <h2>🩺 Cuidados Específicos</h2>
+            <div id="cuidadosList"></div>
+            <button type="button" class="btn-add" onclick="window.adicionarCuidado()">+ Adicionar Cuidado</button>
+        </div>
+
+        <button class="btn-salvar" onclick="window.salvarPlano()">💾 Salvar Plano Terapêutico</button>
+    </div>
+
+    <!-- Modal de Confirmação -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="icon">✅✨</div>
+                <h3>Plano Criado com Sucesso!</h3>
+                <p>O plano terapêutico foi registrado</p>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Conteúdo dinâmico -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Loader -->
+    <div id="loader" class="loader">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Variáveis globais
+        let pacienteId = null;
+        let pacienteNome = null;
+        let profissional = null;
+        
+        let medicamentos = [];
+        let exercicios = [];
+        let cuidados = [];
+        
+        let nextId = 1;
+        
+        // Funções auxiliares
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        function setLoader(show) {
+            const loader = document.getElementById('loader');
+            if (show) loader.classList.add('show');
+            else loader.classList.remove('show');
+        }
+        
+        function carregarProfissional() {
+            const stored = localStorage.getItem('simbio_profissional');
+            if (!stored) {
+                window.location.href = '/login-profissional.html';
+                return null;
+            }
+            profissional = JSON.parse(stored);
+            return profissional;
+        }
+        
+        function carregarPacienteDaURL() {
+            const params = new URLSearchParams(window.location.search);
+            pacienteId = params.get('paciente');
+            pacienteNome = params.get('nome');
+            
+            if (!pacienteId) {
+                const stored = localStorage.getItem('simbio_paciente_selecionado');
+                if (stored) {
+                    const p = JSON.parse(stored);
+                    pacienteId = p.id;
+                    pacienteNome = p.nome;
+                }
+            }
+            
+            if (pacienteId && pacienteNome) {
+                document.getElementById('pacienteInfo').innerHTML = `👶 Paciente: ${pacienteNome} (ID: ${pacienteId})`;
+            } else {
+                document.getElementById('pacienteInfo').innerHTML = '⚠️ Nenhum paciente selecionado';
+            }
+        }
+        
+        // Funções de adicionar
+        window.adicionarMedicamento = function() {
+            const id = nextId++;
+            medicamentos.push({
+                id,
+                nome: '',
+                dosagem: '',
+                horarios: '',
+                duracao_dias: '',
+                instrucoes: ''
+            });
+            renderizarMedicamentos();
+        };
+        
+        window.adicionarExercicio = function() {
+            const id = nextId++;
+            exercicios.push({
+                id,
+                nome: '',
+                frequencia: '',
+                duracao: '',
+                repeticoes: '',
+                instrucoes: ''
+            });
+            renderizarExercicios();
+        };
+        
+        window.adicionarCuidado = function() {
+            const id = nextId++;
+            cuidados.push({
+                id,
+                nome: '',
+                descricao: '',
+                frequencia: '',
+                horarios: ''
+            });
+            renderizarCuidados();
+        };
+        
+        // Funções de remover
+        window.removerMedicamento = function(id) {
+            medicamentos = medicamentos.filter(m => m.id !== id);
+            renderizarMedicamentos();
+        };
+        
+        window.removerExercicio = function(id) {
+            exercicios = exercicios.filter(e => e.id !== id);
+            renderizarExercicios();
+        };
+        
+        window.removerCuidado = function(id) {
+            cuidados = cuidados.filter(c => c.id !== id);
+            renderizarCuidados();
+        };
+        
+        // Funções de atualizar
+        window.atualizarMedicamento = function(id, campo, valor) {
+            const med = medicamentos.find(m => m.id === id);
+            if (med) med[campo] = valor;
+        };
+        
+        window.atualizarExercicio = function(id, campo, valor) {
+            const exe = exercicios.find(e => e.id === id);
+            if (exe) exe[campo] = valor;
+        };
+        
+        window.atualizarCuidado = function(id, campo, valor) {
+            const cuid = cuidados.find(c => c.id === id);
+            if (cuid) cuid[campo] = valor;
+        };
+        
+        // Funções de renderização
+        function renderizarMedicamentos() {
+            const container = document.getElementById('medicamentosList');
+            if (!container) return;
+            if (medicamentos.length === 0) {
+                container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum medicamento adicionado. Clique em "+" para adicionar.</p>';
+                return;
+            }
+            container.innerHTML = medicamentos.map(med => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3>💊 Medicamento</h3>
+                        <button class="btn-remover" onclick="window.removerMedicamento(${med.id})">Remover</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do medicamento *</label>
+                        <input type="text" value="${(med.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Amoxicilina" onchange="window.atualizarMedicamento(${med.id}, 'nome', this.value)">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Dosagem *</label>
+                            <input type="text" value="${(med.dosagem || '').replace(/"/g, '&quot;')}" placeholder="Ex: 500mg" onchange="window.atualizarMedicamento(${med.id}, 'dosagem', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Horários *</label>
+                            <input type="text" value="${(med.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: 08:00, 14:00, 20:00" onchange="window.atualizarMedicamento(${med.id}, 'horarios', this.value)">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Duração (dias)</label>
+                            <input type="number" value="${med.duracao_dias || ''}" placeholder="Ex: 7" onchange="window.atualizarMedicamento(${med.id}, 'duracao_dias', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Instruções</label>
+                            <input type="text" value="${(med.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Tomar após as refeições" onchange="window.atualizarMedicamento(${med.id}, 'instrucoes', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderizarExercicios() {
+            const container = document.getElementById('exerciciosList');
+            if (!container) return;
+            if (exercicios.length === 0) {
+                container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum exercício adicionado. Clique em "+" para adicionar.</p>';
+                return;
+            }
+            container.innerHTML = exercicios.map(exe => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3>🏃 Exercício</h3>
+                        <button class="btn-remover" onclick="window.removerExercicio(${exe.id})">Remover</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do exercício *</label>
+                        <input type="text" value="${(exe.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Alongamento de braços" onchange="window.atualizarExercicio(${exe.id}, 'nome', this.value)">
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Frequência *</label>
+                            <input type="text" value="${(exe.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: 2x ao dia" onchange="window.atualizarExercicio(${exe.id}, 'frequencia', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Duração *</label>
+                            <input type="text" value="${(exe.duracao || '').replace(/"/g, '&quot;')}" placeholder="Ex: 10 minutos" onchange="window.atualizarExercicio(${exe.id}, 'duracao', this.value)">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Repetições</label>
+                            <input type="number" value="${exe.repeticoes || ''}" placeholder="Ex: 10" onchange="window.atualizarExercicio(${exe.id}, 'repeticoes', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Instruções</label>
+                            <input type="text" value="${(exe.instrucoes || '').replace(/"/g, '&quot;')}" placeholder="Ex: Fazer com calma" onchange="window.atualizarExercicio(${exe.id}, 'instrucoes', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderizarCuidados() {
+            const container = document.getElementById('cuidadosList');
+            if (!container) return;
+            if (cuidados.length === 0) {
+                container.innerHTML = '<p style="color: #888; padding: 16px; text-align: center;">Nenhum cuidado adicionado. Clique em "+" para adicionar.</p>';
+                return;
+            }
+            container.innerHTML = cuidados.map(cuid => `
+                <div class="item-card">
+                    <div class="item-header">
+                        <h3>🩺 Cuidado</h3>
+                        <button class="btn-remover" onclick="window.removerCuidado(${cuid.id})">Remover</button>
+                    </div>
+                    <div class="form-group">
+                        <label>Nome do cuidado *</label>
+                        <input type="text" value="${(cuid.nome || '').replace(/"/g, '&quot;')}" placeholder="Ex: Cuidado com o curativo" onchange="window.atualizarCuidado(${cuid.id}, 'nome', this.value)">
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição *</label>
+                        <textarea rows="2" placeholder="Descreva o cuidado..." onchange="window.atualizarCuidado(${cuid.id}, 'descricao', this.value)">${cuid.descricao || ''}</textarea>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label>Frequência *</label>
+                            <input type="text" value="${(cuid.frequencia || '').replace(/"/g, '&quot;')}" placeholder="Ex: Diário" onchange="window.atualizarCuidado(${cuid.id}, 'frequencia', this.value)">
+                        </div>
+                        <div class="form-group">
+                            <label>Horários</label>
+                            <input type="text" value="${(cuid.horarios || '').replace(/"/g, '&quot;')}" placeholder="Ex: Manhã e noite" onchange="window.atualizarCuidado(${cuid.id}, 'horarios', this.value)">
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function validarPlano() {
+            let isValid = true;
+            
+            // Validar medicamentos
+            medicamentos.forEach(med => {
+                if (med.nome && med.nome.trim() !== '') {
+                    if (!med.dosagem || med.dosagem.trim() === '') {
+                        showToast(`Medicamento "${med.nome}" sem dosagem`, 'error');
+                        isValid = false;
+                    }
+                    if (!med.horarios || med.horarios.trim() === '') {
+                        showToast(`Medicamento "${med.nome}" sem horários`, 'error');
+                        isValid = false;
+                    }
+                } else if (med.nome === '' && (med.dosagem || med.horarios)) {
+                    showToast(`Medicamento sem nome preenchido`, 'error');
+                    isValid = false;
+                }
+            });
+            
+            // Validar exercícios
+            exercicios.forEach(exe => {
+                if (exe.nome && exe.nome.trim() !== '') {
+                    if (!exe.frequencia || exe.frequencia.trim() === '') {
+                        showToast(`Exercício "${exe.nome}" sem frequência`, 'error');
+                        isValid = false;
+                    }
+                    if (!exe.duracao || exe.duracao.trim() === '') {
+                        showToast(`Exercício "${exe.nome}" sem duração`, 'error');
+                        isValid = false;
+                    }
+                } else if (exe.nome === '' && (exe.frequencia || exe.duracao)) {
+                    showToast(`Exercício sem nome preenchido`, 'error');
+                    isValid = false;
+                }
+            });
+            
+            // Validar cuidados
+            cuidados.forEach(cuid => {
+                if (cuid.nome && cuid.nome.trim() !== '') {
+                    if (!cuid.descricao || cuid.descricao.trim() === '') {
+                        showToast(`Cuidado "${cuid.nome}" sem descrição`, 'error');
+                        isValid = false;
+                    }
+                    if (!cuid.frequencia || cuid.frequencia.trim() === '') {
+                        showToast(`Cuidado "${cuid.nome}" sem frequência`, 'error');
+                        isValid = false;
+                    }
+                } else if (cuid.nome === '' && (cuid.descricao || cuid.frequencia)) {
+                    showToast(`Cuidado sem nome preenchido`, 'error');
+                    isValid = false;
+                }
+            });
+            
+            const temItensValidos = medicamentos.some(m => m.nome && m.nome.trim() !== '') ||
+                                    exercicios.some(e => e.nome && e.nome.trim() !== '') ||
+                                    cuidados.some(c => c.nome && c.nome.trim() !== '');
+            
+            if (!temItensValidos) {
+                showToast('Adicione pelo menos um medicamento, exercício ou cuidado com nome preenchido.', 'error');
+                return false;
+            }
+            
+            return isValid;
+        }
+        
+        function mostrarConfirmacao(resposta) {
+            const modal = document.getElementById('confirmModal');
+            const modalBody = document.getElementById('modalBody');
+            
+            const resumo = resposta.resumo || { medicamentos: 0, exercicios: 0, cuidados: 0 };
+            
+            let html = `
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <p style="color: #4caf50; font-size: 18px; font-weight: bold;">✨ Plano salvo com sucesso! ✨</p>
+                    <p style="color: #666;">O plano terapêutico foi registrado e já está disponível para o cuidador.</p>
+                </div>
+                
+                <div class="resumo-item">
+                    <h4>📋 Resumo do Plano</h4>
+                    <p><strong>Paciente:</strong> ${pacienteNome}</p>
+                    <p><strong>Profissional:</strong> ${profissional.nome}</p>
+                    <p><strong>Data de criação:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+                
+                <div class="resumo-item">
+                    <h4>💊 Medicamentos (${medicamentos.filter(m => m.nome && m.nome.trim()).length})</h4>
+            `;
+            
+            const medValidos = medicamentos.filter(m => m.nome && m.nome.trim());
+            if (medValidos.length > 0) {
+                medValidos.forEach(med => {
+                    html += `
+                        <div style="margin-bottom: 12px;">
+                            <span class="badge">${med.nome}</span>
+                            <span style="font-size: 13px; color: #666;">${med.dosagem} - ${med.horarios}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p style="color: #888;">Nenhum medicamento registrado</p>`;
+            }
+            
+            html += `</div><div class="resumo-item"><h4>🏃 Exercícios (${exercicios.filter(e => e.nome && e.nome.trim()).length})</h4>`;
+            
+            const exeValidos = exercicios.filter(e => e.nome && e.nome.trim());
+            if (exeValidos.length > 0) {
+                exeValidos.forEach(exe => {
+                    html += `
+                        <div style="margin-bottom: 12px;">
+                            <span class="badge">${exe.nome}</span>
+                            <span style="font-size: 13px; color: #666;">${exe.frequencia} - ${exe.duracao}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p style="color: #888;">Nenhum exercício registrado</p>`;
+            }
+            
+            html += `</div><div class="resumo-item"><h4>🩺 Cuidados (${cuidados.filter(c => c.nome && c.nome.trim()).length})</h4>`;
+            
+            const cuidValidos = cuidados.filter(c => c.nome && c.nome.trim());
+            if (cuidValidos.length > 0) {
+                cuidValidos.forEach(cuid => {
+                    html += `
+                        <div style="margin-bottom: 12px;">
+                            <span class="badge">${cuid.nome}</span>
+                            <span style="font-size: 13px; color: #666;">${cuid.frequencia}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                html += `<p style="color: #888;">Nenhum cuidado registrado</p>`;
+            }
+            
+            html += `
+                </div>
+                <button class="btn-fechar" onclick="window.fecharModalEVoltar()">✅ Ver lista de pacientes</button>
+            `;
+            
+            modalBody.innerHTML = html;
+            modal.classList.add('show');
+        }
+        
+        window.fecharModalEVoltar = function() {
+            const modal = document.getElementById('confirmModal');
+            modal.classList.remove('show');
+            window.location.href = '/lista-pacientes.html';
+        };
+        
+        window.salvarPlano = async function() {
+            if (!pacienteId) {
+                showToast('Nenhum paciente selecionado', 'error');
+                return;
+            }
+            
+            if (!validarPlano()) {
+                return;
+            }
+            
+            const observacoes = document.getElementById('observacoes').value;
+            const dataFim = document.getElementById('dataFim').value;
+            
+            // Filtrar apenas itens com nome preenchido
+            const medicamentosFiltrados = medicamentos.filter(m => m.nome && m.nome.trim() !== '');
+            const exerciciosFiltrados = exercicios.filter(e => e.nome && e.nome.trim() !== '');
+            const cuidadosFiltrados = cuidados.filter(c => c.nome && c.nome.trim() !== '');
+            
+            const payload = {
+                paciente_id: parseInt(pacienteId),
+                profissional_id: profissional.id,
+                medicamentos: medicamentosFiltrados,
+                exercicios: exerciciosFiltrados,
+                cuidados: cuidadosFiltrados,
+                observacoes: observacoes,
+                data_fim: dataFim || null
+            };
+            
+            setLoader(true);
+            
+            try {
+                const response = await fetch('/api/planos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error || 'Erro ao salvar plano');
+                
+                // Mostrar modal de confirmação com resumo
+                mostrarConfirmacao(data);
+                
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                setLoader(false);
+            }
+        };
+        
+        window.voltar = function() {
+            window.location.href = '/lista-pacientes.html';
+        };
+        
+        // Inicialização
+        function init() {
+            if (!carregarProfissional()) return;
+            carregarPacienteDaURL();
+            
+            // Adicionar exemplos iniciais para demonstração
+            medicamentos.push({
+                id: nextId++,
+                nome: 'Amoxicilina',
+                dosagem: '500mg',
+                horarios: '08:00, 20:00',
+                duracao_dias: '7',
+                instrucoes: 'Tomar após as refeições'
+            });
+            exercicios.push({
+                id: nextId++,
+                nome: 'Respiração Diafragmática',
+                frequencia: '3x ao dia',
+                duracao: '5 minutos',
+                repeticoes: '10',
+                instrucoes: 'Inspirar pelo nariz, expirar pela boca lentamente'
+            });
+            cuidados.push({
+                id: nextId++,
+                nome: 'Hidratação da pele',
+                descricao: 'Aplicar creme hidratante na região operada',
+                frequencia: '2x ao dia',
+                horarios: 'Manhã e noite'
+            });
+            renderizarMedicamentos();
+            renderizarExercicios();
+            renderizarCuidados();
+        }
+        
+        // Iniciar quando o DOM estiver carregado
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

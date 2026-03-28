@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simbio - Cadastro de Cuidador</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px 24px;
+            text-align: center;
+        }
+        .logo { font-size: 48px; margin-bottom: 12px; }
+        .header h1 { color: white; font-size: 24px; margin-bottom: 8px; }
+        .header p { color: rgba(255,255,255,0.9); font-size: 14px; }
+        .form-content { padding: 32px 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.1);
+        }
+        .btn-cadastrar {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .btn-cadastrar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .error-message { color: #ff6b6b; font-size: 12px; margin-top: 6px; display: none; }
+        .error-message.show { display: block; }
+        .input-error { border-color: #ff6b6b !important; }
+        .link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .link a {
+            color: #4facfe;
+            text-decoration: none;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">👨‍👩‍👧✨</div>
+            <h1>Cadastro de Cuidador</h1>
+            <p>Crie sua conta para acompanhar seu pequeno</p>
+        </div>
+
+        <div class="form-content">
+            <form id="cadastroForm">
+                <div class="form-group">
+                    <label>Seu nome completo *</label>
+                    <input type="text" id="nome" placeholder="Ex: Maria da Silva">
+                    <div class="error-message" id="errorNome">Por favor, informe seu nome</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>E-mail *</label>
+                    <input type="email" id="email" placeholder="seuemail@email.com">
+                    <div class="error-message" id="errorEmail">Por favor, informe um e-mail válido</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Senha *</label>
+                    <input type="password" id="senha" placeholder="Mínimo 6 caracteres">
+                    <div class="error-message" id="errorSenha">A senha deve ter no mínimo 6 caracteres</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Confirmar senha *</label>
+                    <input type="password" id="confirmarSenha" placeholder="Digite a senha novamente">
+                    <div class="error-message" id="errorConfirmar">As senhas não coincidem</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Telefone *</label>
+                    <input type="tel" id="telefone" placeholder="(61) 99999-9999">
+                    <div class="error-message" id="errorTelefone">Por favor, informe um telefone válido</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Selecione o paciente *</label>
+                    <select id="pacienteId">
+                        <option value="">Selecione um paciente</option>
+                    </select>
+                    <div class="error-message" id="errorPaciente">Por favor, selecione um paciente</div>
+                </div>
+                
+                <button type="submit" class="btn-cadastrar">📝 Cadastrar</button>
+                
+                <div class="link">
+                    Já tem uma conta? <a href="/login.html">Faça login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const form = document.getElementById('cadastroForm');
+        const toast = document.getElementById('toast');
+        
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Formatação de telefone
+        const telefoneInput = document.getElementById('telefone');
+        telefoneInput.addEventListener('input', () => {
+            let valor = telefoneInput.value.replace(/\D/g, '');
+            if (valor.length <= 11) {
+                if (valor.length <= 2) telefoneInput.value = valor;
+                else if (valor.length <= 7) telefoneInput.value = `(${valor.slice(0,2)}) ${valor.slice(2)}`;
+                else telefoneInput.value = `(${valor.slice(0,2)}) ${valor.slice(2,7)}-${valor.slice(7,11)}`;
+            }
+        });
+        
+        // Carregar lista de pacientes
+        async function carregarPacientes() {
+            try {
+                const response = await fetch('/api/pacientes');
+                const pacientes = await response.json();
+                const select = document.getElementById('pacienteId');
+                select.innerHTML = '<option value="">Selecione um paciente</option>';
+                pacientes.forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.nome} (${p.idade} anos)</option>`;
+                });
+            } catch (err) {
+                console.error('Erro ao carregar pacientes:', err);
+            }
+        }
+        
+        function validarFormulario() {
+            let isValid = true;
+            
+            const nome = document.getElementById('nome').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value;
+            const confirmar = document.getElementById('confirmarSenha').value;
+            const telefone = document.getElementById('telefone').value;
+            const pacienteId = document.getElementById('pacienteId').value;
+            
+            // Limpar erros
+            document.querySelectorAll('.error-message').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+            
+            if (!nome) {
+                document.getElementById('errorNome').classList.add('show');
+                document.getElementById('nome').classList.add('input-error');
+                isValid = false;
+            }
+            
+            if (!email || !email.includes('@')) {
+                document.getElementById('errorEmail').classList.add('show');
+                document.getElementById('email').classList.add('input-error');
+                isValid = false;
+            }
+            
+            if (!senha || senha.length < 6) {
+                document.getElementById('errorSenha').classList.add('show');
+                document.getElementById('senha').classList.add('input-error');
+                isValid = false;
+            }
+            
+            if (senha !== confirmar) {
+                document.getElementById('errorConfirmar').classList.add('show');
+                document.getElementById('confirmarSenha').classList.add('input-error');
+                isValid = false;
+            }
+            
+            const telefoneLimpo = telefone.replace(/\D/g, '');
+            if (!telefoneLimpo || telefoneLimpo.length < 10 || telefoneLimpo.length > 11) {
+                document.getElementById('errorTelefone').classList.add('show');
+                document.getElementById('telefone').classList.add('input-error');
+                isValid = false;
+            }
+            
+            if (!pacienteId) {
+                document.getElementById('errorPaciente').classList.add('show');
+                document.getElementById('pacienteId').classList.add('input-error');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validarFormulario()) {
+                showToast('Preencha todos os campos corretamente.', 'error');
+                return;
+            }
+            
+            const payload = {
+                nome: document.getElementById('nome').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                senha: document.getElementById('senha').value,
+                telefone: document.getElementById('telefone').value,
+                paciente_id: parseInt(document.getElementById('pacienteId').value)
+            };
+            
+            try {
+                const response = await fetch('/api/cuidadores', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error || 'Erro no cadastro');
+                
+                showToast(`✅ ${payload.nome}, seu cadastro foi realizado com sucesso!`, 'success');
+                
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 2000);
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        });
+        
+        // Inicialização
+        carregarPacientes();
+    </script>
+</body>
+</html>

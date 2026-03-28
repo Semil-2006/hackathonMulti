@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simbio - Login</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            padding: 30px 24px;
+            text-align: center;
+        }
+        .logo { font-size: 48px; margin-bottom: 12px; }
+        .header h1 { color: white; font-size: 28px; margin-bottom: 8px; }
+        .header p { color: rgba(255,255,255,0.9); font-size: 14px; }
+        .form-content { padding: 32px 24px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79,172,254,0.1);
+        }
+        .btn-entrar {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .btn-entrar:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(102,126,234,0.3); }
+        .error-message { color: #ff6b6b; font-size: 12px; margin-top: 6px; display: none; }
+        .error-message.show { display: block; }
+        .link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .link a {
+            color: #4facfe;
+            text-decoration: none;
+        }
+        .tipo-usuario {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+        .tipo-btn {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 40px;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .tipo-btn.ativo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #333;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            z-index: 1000;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast.success { background: #4caf50; }
+        .toast.error { background: #ff6b6b; }
+        .demo-info {
+            background: #e8f4fd;
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #2c5282;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌱✨</div>
+            <h1>Simbio</h1>
+            <p>O Elo Humanizado de Recuperação</p>
+        </div>
+
+        <div class="form-content">
+            <div class="tipo-usuario">
+                <div class="tipo-btn" data-tipo="cuidador">👨‍👩‍👧 Cuidador</div>
+                <div class="tipo-btn" data-tipo="profissional">👩‍⚕️ Profissional</div>
+            </div>
+            
+            <div id="demoInfo" class="demo-info">
+                <strong>🔐 Dados de teste (Cuidador):</strong><br>
+                E-mail: cuidador@email.com (após cadastro)<br>
+                <strong>👩‍⚕️ Profissional:</strong><br>
+                E-mail: dr_ana@simbio.com | Senha: senha123
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" id="email" placeholder="seuemail@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="senha" placeholder="••••••••">
+                    <div class="error-message" id="errorLogin">E-mail ou senha inválidos</div>
+                </div>
+                <button type="submit" class="btn-entrar">🔑 Entrar</button>
+                
+                <div class="link" id="linkCadastro">
+                    <a href="/cadastro-cuidador.html">Não tem uma conta? Cadastre-se</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        let tipoUsuario = 'cuidador';
+        
+        const toast = document.getElementById('toast');
+        const tipoBtns = document.querySelectorAll('.tipo-btn');
+        const linkCadastro = document.getElementById('linkCadastro');
+        const demoInfo = document.getElementById('demoInfo');
+        
+        function showToast(message, type = 'success') {
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Alternar entre tipos de usuário
+        tipoBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tipoBtns.forEach(b => b.classList.remove('ativo'));
+                btn.classList.add('ativo');
+                tipoUsuario = btn.getAttribute('data-tipo');
+                
+                if (tipoUsuario === 'profissional') {
+                    linkCadastro.style.display = 'none';
+                    demoInfo.innerHTML = `
+                        <strong>👩‍⚕️ Dados de teste (Profissional):</strong><br>
+                        E-mail: dr_ana@simbio.com<br>
+                        Senha: senha123
+                    `;
+                } else {
+                    linkCadastro.style.display = 'block';
+                    demoInfo.innerHTML = `
+                        <strong>🔐 Dados de teste (Cuidador):</strong><br>
+                        E-mail: cuidador@email.com (após cadastro)<br>
+                        <strong>👩‍⚕️ Profissional:</strong><br>
+                        E-mail: dr_ana@simbio.com | Senha: senha123
+                    `;
+                }
+            });
+        });
+        
+        // Login
+        const form = document.getElementById('loginForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value.trim();
+            const senha = document.getElementById('senha').value;
+            
+            if (!email || !senha) {
+                showToast('Preencha e-mail e senha.', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha, tipo: tipoUsuario })
+                });
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Erro no login');
+                }
+                
+                // Salvar dados do usuário na sessão
+                localStorage.setItem('simbio_usuario', JSON.stringify(data.usuario));
+                
+                showToast(`Bem-vindo(a), ${data.usuario.nome}!`, 'success');
+                
+                // Redirecionar conforme o tipo de usuário
+                setTimeout(() => {
+                    if (data.usuario.tipo_usuario === 'profissional') {
+                        window.location.href = '/lista-pacientes.html';
+                    } else {
+                        window.location.href = '/dashboard-cuidador.html';
+                    }
+                }, 1500);
+                
+            } catch (err) {
+                document.getElementById('errorLogin').classList.add('show');
+                showToast(err.message, 'error');
+            }
+        });
+        
+        // Verificar se já está logado
+        const usuarioLogado = localStorage.getItem('simbio_usuario');
+        if (usuarioLogado) {
+            const usuario = JSON.parse(usuarioLogado);
+            if (usuario.tipo_usuario === 'profissional') {
+                window.location.href = '/lista-pacientes.html';
+            } else if (usuario.tipo_usuario === 'cuidador') {
+                window.location.href = '/dashboard-cuidador.html';
+            }
+        }
+    </script>
+</body>
+</html>
